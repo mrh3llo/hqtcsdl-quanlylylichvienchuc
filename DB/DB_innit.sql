@@ -2,7 +2,8 @@
 /* DBMS name:      Microsoft SQL Server 2017                    */
 /* Created on:     22/05/2026 15:33:05                          */
 /*==============================================================*/
-
+CREATE DATABASE IF NOT EXISTS CSDL_VIEN_CHUC;
+USE CSDL_VIEN_CHUC;
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
