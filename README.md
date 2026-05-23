@@ -15,3 +15,6 @@ Go to the project directory, please make sure that you have MYSQL >8.0.44
  I have no idea what i'm writting it's fucking 1:40am
 ```
 
+
+
+mysql -h 127.0.0.1 -P 3306 -u root -p
