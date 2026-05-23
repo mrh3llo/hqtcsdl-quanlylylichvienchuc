@@ -10,6 +10,7 @@ services:
     volumes:
       - mysql_volume:/var/lib/mysql
       - ./DB/DB_innit.sql:/docker-entrypoint-initdb.d/DB_innit.sql
+      
 
     ports:
       - "${MYSQL_PORT}:3306"
@@ -21,6 +22,7 @@ services:
     container_name: php_server
     volumes:
       - ./src:/var/www/html
+      - ./data:/data
 
     ports:
       - "${PHP_PORT}:80"
