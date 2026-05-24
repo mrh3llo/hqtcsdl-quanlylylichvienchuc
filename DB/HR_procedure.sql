@@ -1,70 +1,4 @@
 DELIMITER $$
-
-CREATE PROCEDURE SP_TRUYXUAT_CHITIET_VIENCHUC (
-    IN p_MAVIENCHUC CHAR(10)
-)
-BEGIN
-    SELECT 
-        -- Thông tin cá nhân
-        vc.MAVIENCHUC,
-        CONCAT(vc.HO, ' ', vc.TENLOT, ' ', vc.TEN) AS HOTEN,
-        vc.TENKHAC,
-        vc.NGAYSINH,
-        vc.GIOITINH,
-        vc.SOCCCD,
-        vc.NGAYTUYENDUNG,
-        vc.SOHIEUVIENCHUC,
-        dt.TENDANTOC,
-        tg.TENTONGIAO,
-        hh.TENHOCHAM,
-        dd.TENDANHHIEU,
-        
-        --   Ngạch lương
-        tnn.MACHITIETLUONG,
-        tnn.THOIGIANBATDAUHUONG,
-        hsl.MANHOMNGACH,
-        nn.TENNHOMNGACH,
-        hsl.MABACLUONG,
-        hsl.HESOLUONG,
-
-        --   Khen thưởng
-        kt.SOQUYETDINHKHENTHUONG,
-        kt.NAMNHANKHENTHUONG,
-        hckt.TENHINHTHUCKHENTHUONG,
-        
-        --  Kỷ luật
-        kl.SOQUYETDINHKYLUAT,
-        kl.NAMBIKYLUAT,
-        hckl.TENHINHTHUCKYLUAT
-
-    FROM VIENCHUC vc
-    --  nối lý lịch
-    LEFT JOIN DANTOC dt ON vc.MADANTOC = dt.MADANTOC
-    LEFT JOIN TONGIAO tg ON vc.MATONGIAO = tg.MATONGIAO
-    LEFT JOIN HOCHAM hh ON vc.MAHOCHAM = hh.MAHOCHAM
-    LEFT JOIN DANHHIEU dd ON vc.MADANHHIEU = dd.MADANHHIEU
-    
-    --  nối Lương lẹo
-    LEFT JOIN THUOC_NHOM_NGACH tnn ON vc.MAVIENCHUC = tnn.MAVIENCHUC
-    LEFT JOIN CO_HESOLUONG hsl ON tnn.MACHITIETLUONG = hsl.MACHITIETLUONG
-    LEFT JOIN NHOMNGACH nn ON hsl.MANHOMNGACH = nn.MANHOMNGACH
-    
-    --  nối Khen thưởng
-    LEFT JOIN DUOC_KHENTHUONG kt ON vc.MAVIENCHUC = kt.MAVIENCHUC
-    LEFT JOIN HINHTHUCKHENTHUONG hckt ON kt.MAHINHTHUCKHENTHUONG = hckt.MAHINHTHUCKHENTHUONG
-    
-    --  nối Kỷ luật
-    LEFT JOIN BI_KYLUAT kl ON vc.MAVIENCHUC = kl.MAVIENCHUC
-    LEFT JOIN HINHTHUCKYLUAT hckl ON kl.MAHINHTHUCKYLUAT = hckl.MAHINHTHUCKYLUAT
-    
-    WHERE vc.MAVIENCHUC = p_MAVIENCHUC;
-END$$
-
-DELIMITER ;
-
-
-
-DELIMITER $$
 -- DÀI VCL!!!!!
 CREATE PROCEDURE SP_CAPNHAT_LYLICH_VIENCHUC (
     IN p_MAVIENCHUC CHAR(10),
@@ -277,3 +211,4 @@ BEGIN
 END$$
 
 DELIMITER ;
+

@@ -11,6 +11,8 @@ services:
       - mysql_volume:/var/lib/mysql
       - ./DB/DB_innit.sql:/docker-entrypoint-initdb.d/DB_innit.sql
       - ./DB/HR_procedure.sql:/docker-entrypoint-initdb.d/HR_procedure.sql
+      - ./DB/DB_triggers.sql:/docker-entrypoint-initdb.d/DB_triggers.sql
+      - ./DB/DB_views.sql:/docker-entrypoint-initdb.d/DB_views.sql
 
     ports:
       - "${MYSQL_PORT}:3306"
