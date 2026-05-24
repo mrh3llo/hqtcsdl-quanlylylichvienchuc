@@ -71,6 +71,52 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE CREATE_VIENCHUC_ACCOUNT (
+    IN p_mavienchuc CHAR(10),
+    IN p_role VARCHAR(20)
+)
+BEGIN
+    DECLARE db_role VARCHAR(30);
+
+    IF p_role = 'admin' THEN
+        SET db_role = 'admin_role';
+    ELSEIF p_role = 'hr' THEN
+        SET db_role = 'hr_role';
+    ELSEIF p_role = 'manager' THEN
+        SET db_role = 'manager_role';
+    ELSE
+        SET db_role = 'viewer_role';
+    END IF;
+
+    INSERT INTO USERS (MAVIENCHUC, PASSWORD, ROLE)
+    VALUES (p_mavienchuc, p_mavienchuc, p_role);
+
+    SET @sql = CONCAT(
+        "CREATE USER IF NOT EXISTS '", p_mavienchuc,
+        "'@'localhost' IDENTIFIED BY '", p_mavienchuc, "'"
+    );
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
+    SET @sql2 = CONCAT(
+        "GRANT '", db_role, "' TO '", p_mavienchuc, "'@'localhost'"
+    );
+    PREPARE stmt2 FROM @sql2;
+    EXECUTE stmt2;
+    DEALLOCATE PREPARE stmt2;
+    SET @sql3 = CONCAT(
+        "SET DEFAULT ROLE '", db_role,
+        "' TO '", p_mavienchuc, "'@'localhost'"
+    );
+    PREPARE stmt3 FROM @sql3;
+    EXECUTE stmt3;
+    DEALLOCATE PREPARE stmt3;
+
+END$$
+
+DELIMITER ;
 
 DELIMITER $$
 

@@ -1,7 +1,0 @@
-DELIMITER $$
-
-CREATE PROCEDURE SP_LOGIN(
-    IN p_email VARCHAR(50),
-    IN p_password VARCHAR(255)
-)
-BEGIN
