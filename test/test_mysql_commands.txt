@@ -25,3 +25,19 @@ INSERT INTO TRINHDOHOCVAN (MATRINHDO, TRINHDOGIAODUCPHOTHONG, TRINHDONGHIEPVUCHU
 -- 2. Dependent Lookup Tables (Depend on previous)
 INSERT INTO TINHTHANH (MATINHTHANH, TENTINHTHANH) VALUES ('TT01', 'Hà Nội'), ('TT02', 'Đồng Tháp');
 INSERT INTO XAPHUONG (MAXAPHUONG, MATINHTHANH, TENXAPHUONG) VALUES ('XP001', 'TT01', 'Phường Cầu Giấy'), ('XP002', 'TT02', 'Phường 1');
+
+
+CALL SP_THEM_VIENCHUC(
+    'ADMIN01', 'DH01', 'TG01', 'HH01', 'H01', 'DT01', 'HB01', 'XP001', 'XP001',
+    'Nguyen', 'Van', 'Admin', NULL, '1990-01-01', 'Nam', '2020-01-01',
+    'SH001', NULL, '1234567890', 'Ha Noi', '2025-01-01', 'BH001', 'O', NULL, NULL,
+    'admin'
+);
+
+-- Create HR User (Example Data)
+CALL SP_THEM_VIENCHUC(
+    'HR01', 'DH01', 'TG01', 'HH01', 'H01', 'DT01', 'HB01', 'XP001', 'XP001',
+    'Tran', 'Thi', 'HR', NULL, '1995-05-05', 'Nu', '2021-06-01',
+    'SH002', NULL, '0987654321', 'Ha Noi', '2025-01-01', 'BH002', 'A', NULL, NULL,
+    'hr'
+);
