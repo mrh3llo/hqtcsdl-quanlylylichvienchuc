@@ -4,6 +4,7 @@
 /*==============================================================*/
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET GLOBAL activate_all_roles_on_login = ON;
 
 CREATE DATABASE IF NOT EXISTS CSDL_VIEN_CHUC;
 USE CSDL_VIEN_CHUC;
@@ -424,7 +425,31 @@ CREATE TABLE XAPHUONG (
 
 CREATE INDEX TRUCTHUOC_FK ON XAPHUONG (MATINHTHANH ASC);
 
+-- tự thêm vào... không ảnh hưởng đến schema, chỉ dành cho php server
+CREATE TABLE USERS (
+   ID                    INT AUTO_INCREMENT     NOT NULL,
+   MAVIENCHUC           CHAR(10)             NULL,
+   PASSWORD              VARCHAR(255)         NOT NULL,
+   ROLE                  VARCHAR(20)          NOT NULL,
+   CONSTRAINT PK_USER PRIMARY KEY (ID),
+   FOREIGN KEY (MAVIENCHUC) REFERENCES VIENCHUC(MAVIENCHUC));
 
+
+CREATE TABLE AUDIT_LOG (
+   ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+   TABLE_NAME VARCHAR(100),
+   RECORD_ID VARCHAR(100),
+
+   ACTION_TYPE VARCHAR(20),
+
+   OLD_DATA JSON,
+   NEW_DATA JSON,
+
+   UPDATED_BY INT,
+
+   UPDATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 -- -----------------------------------------------------
 -- FOREIGN KEY CONSTRAINTS
 -- -----------------------------------------------------
