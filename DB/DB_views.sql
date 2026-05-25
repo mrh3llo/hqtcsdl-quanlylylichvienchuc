@@ -4,12 +4,10 @@ SELECT
     CONCAT(vc.HO, ' ', vc.TENLOT, ' ', vc.TEN) AS HOTEN,
     vc.NGAYSINH,
     vc.GIOITINH,
-
     dt.TENDANTOC,
     tg.TENTONGIAO,
 
     td.TRINHDONGHIEPVUCHUYENNGANH,
-
     cq.TENCOQUAN,
     cv.TENCHUCVU
 
