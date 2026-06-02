@@ -5,7 +5,7 @@ $user = 'root';
 $pass = '1234567'; 
 $dbname = 'CSDL_VIEN_CHUC';
 
-$basePath = "/var/www/html/csv"; 
+$basePath = "/var/www/html/Data/csv"; 
 
 echo "Starting import process...\n";
 // Cấu trúc danh sách các nhóm bảng theo thứ tự nhập
@@ -87,10 +87,18 @@ foreach ($importSequence as $folder => $tables) {
 echo "ALL IMPORT OPERATIONS COMPLETED.\n";
 
 echo "All paths in directory $basePath:\n";
-foreach (__DIR__ . "/$basePath" as $file) {
-    if ($file->isFile()) {
-        echo " - " . $file->getPathname() . "\n";
+function listAllFiles($dir) {
+    $files = [];
+    foreach (scandir($dir) as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $dir . '/' . $item;
+        if (is_dir($path)) {
+            $files = array_merge($files, listAllFiles($path));
+        } else {
+            $files[] = $path;
+        }
     }
+    return $files;
 }
-$pdo->close();
+$pdo = null;
 ?>
