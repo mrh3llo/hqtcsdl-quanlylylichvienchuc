@@ -1,135 +1,104 @@
 <?php
 $host = 'mysql'; 
-$port = '3306';     
-$user = 'root';     
-$pass = '1234567';  
+$port = '3306'; 
+$user = 'root'; 
+$pass = '1234567'; 
 $dbname = 'CSDL_VIEN_CHUC';
 
-$csvFolder = __DIR__ . "/csv";
+$basePath = "/var/www/html/Data/csv"; 
 
-try {
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname";
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-    echo "Connected successfully!";
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
-
-
-$tables = [
-    "BACLUONG",
-    "CAPLYLUANCHINHTRI",
-    "CAPQUANLYNHANUOC",
-    "CHITIETLUONG",
-    "CHUCDANH_NGHENGHIEP",
-    "CHUCVU",
-    "CHUNGCHITINHOC",
-    "CHUYENMON",
-    "COQUAN",
-    "DANHHIEU",
-    "DANTOC",
-    "HANGTHUONGBINH",
-    "HINHTHUCKHENTHUONG",
-    "HINHTHUCKYLUAT",
-    "HOCHAM",
-    "NGOAINGU",
-    "NHOMNGACH",
-    "QUANHAM",
-    "THONGTINQUANDOI",
-    "TINHTHANH",
-    "TINHTRANGSUCKHOE",
-    "TOCHUCDOANTHECHINHTRIXAHOI",
-    "TONGIAO",
-    "TRINHDOHOCVAN"
+echo "Starting import process...\n";
+// Cấu trúc danh sách các nhóm bảng theo thứ tự nhập
+$importSequence = [
+    "01_DanhMuc" => [
+        "BACLUONG", "CAPLYLUANCHINHTRI", "CAPQUANLYNHANUOC", "CHITIETLUONG", 
+        "CHUCDANH_NGHENGHIEP", "CHUCVU", "CHUNGCHITINHOC", "CHUYENMON", 
+        "COQUAN", "DANHHIEU", "DANTOC", "HANGTHUONGBINH", "HINHTHUCKHENTHUONG", 
+        "HINHTHUCKYLUAT", "HOCHAM", "NGOAINGU", "NHOMNGACH", "QUANHAM", 
+        "THONGTINQUANDOI", "TINHTHANH", "TINHTRANGSUCKHOE", "TOCHUCDOANTHECHINHTRIXAHOI", 
+        "TONGIAO", "TRINHDOHOCVAN"
+    ],
+    "02_VienChuc" => [
+        "XAPHUONG", "VIENCHUC"
+    ],
+    "03_QuanHe" => [
+        "CO_CAPLYLUANCHINHTRI", "CO_CAPQUANLYNHANUOC", "CO_CHUCVU", "CO_HESOLUONG", 
+        "CO_HOKHAUTHUONGTRU", "CO_TAMTRU", "CO_TINHTRANGSK", "CO_TRDCM_CAONHAT", 
+        "CO_TRD_NGOAINGU", "CO_TRD_TINHOC", "DUOC_KHENTHUONG", "THUOC_NHOM_NGACH", 
+        "THUOC_QUANDOI", "THUOC_TOCHUCDOANTHECHINHTRIXAHOI", "TUYENDUNG", "BI_KYLUAT"
+    ]
 ];
 
+try {
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
+    echo "Connected successfully!\n";
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
+}
 
-function importCSV(PDO $pdo, string $tableName, string $csvPath)
-{
+function importCSV(PDO $pdo, string $tableName, string $csvPath) {
     if (!file_exists($csvPath)) {
-        echo "CSV no foundie: $csvPath\n";
+        echo "CSV not found: $csvPath\n";
         return;
     }
 
-    echo "doing $tableName...\n";
-
+    echo "Importing: $tableName...\n";
     $handle = fopen($csvPath, "r");
-
-    if ($handle === false) {
-        echo "Lmao: $csvPath\n";
-        return;
-    }
-
     $headers = fgetcsv($handle);
-
-    if (!$headers) {
-        echo "CSV is fucking empty $csvPath\n";
-        fclose($handle);
-        return;
-    }
-
+    if (!$headers) { fclose($handle); return; }
+    
     $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', $headers[0]);
-
-    // Build SQL
-    $columns = implode(", ", $headers);
-
-    $placeholders = implode(", ", array_map(function($h) {
-        return ":" . $h;
-    }, $headers));
-
-    $sql = "INSERT INTO $tableName ($columns)
-            VALUES ($placeholders)";
-
+    $sql = "INSERT INTO $tableName (" . implode(", ", $headers) . ") VALUES (" . 
+           implode(", ", array_map(fn($h) => ":$h", $headers)) . ")";
+    
     $stmt = $pdo->prepare($sql);
-
     $rowCount = 0;
 
     while (($row = fgetcsv($handle)) !== false) {
-
-        // skip empty rows
-        if (count(array_filter($row)) == 0) {
-            continue;
-        }
-
+        if (count(array_filter($row)) == 0) continue;
+        
         $data = [];
-
         foreach ($headers as $index => $column) {
-
-            $value = $row[$index] ?? null;
-
-            if ($value === '') {
-                $value = null;
-            }
-
-            $data[$column] = $value;
+            $data[$column] = ($row[$index] === '') ? null : $row[$index];
         }
 
         try {
             $stmt->execute($data);
             $rowCount++;
-
         } catch (PDOException $e) {
-
-            echo "insert error in $tableName:\n";
-            echo $e->getMessage() . "\n";
-
-            echo "Data:\n";
-            print_r($data);
+            echo "Error in $tableName: " . $e->getMessage() . "\n";
         }
     }
-
     fclose($handle);
-
-    echo "imported $rowCount rows into $tableName\n\n";
+    echo "Done $tableName ($rowCount rows).\n\n";
 }
 
-
-foreach ($tables as $table) {
-    $csvPath = $csvFolder . "/" . $table . ".csv";
-    importCSV($pdo, $table, $csvPath);
+// Chạy vòng lặp theo cấu trúc $importSequence
+foreach ($importSequence as $folder => $tables) {
+    echo "--- Processing folder: $folder ---\n";
+    foreach ($tables as $table) {
+        $path = $basePath . "/" . $folder . "/" . $table . ".csv";
+        importCSV($pdo, $table, $path);
+    }
 }
 
-echo "DONE\n";
+echo "ALL IMPORT OPERATIONS COMPLETED.\n";
+
+echo "All paths in directory $basePath:\n";
+function listAllFiles($dir) {
+    $files = [];
+    foreach (scandir($dir) as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $dir . '/' . $item;
+        if (is_dir($path)) {
+            $files = array_merge($files, listAllFiles($path));
+        } else {
+            $files[] = $path;
+        }
+    }
+    return $files;
+}
+$pdo = null;
 ?>

@@ -15,7 +15,7 @@ try {
         $pass
     );
 
-    echo "Connected successfully!";
+    echo "Connected successed";
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
