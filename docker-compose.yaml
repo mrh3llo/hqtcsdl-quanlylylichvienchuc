@@ -46,7 +46,7 @@ services:
 
     command: >
       sh -c "
-        sleep 50 &&
+        sleep 30 &&
         php /var/www/html/Data/importdata.php;
         tail -f /dev/null
       "
