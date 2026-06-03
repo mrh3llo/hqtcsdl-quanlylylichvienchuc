@@ -7,6 +7,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: CSDL_VIEN_CHUC
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      
     volumes:
       - mysql_volume:/var/lib/mysql
       - ./DB/DB_innit.sql:/docker-entrypoint-initdb.d/DB_innit.sql
@@ -46,13 +52,14 @@ services:
 
     command: >
       sh -c "
-        sleep 30 &&
+        sleep 10 &&
         php /var/www/html/Data/importdata.php;
         tail -f /dev/null
       "
 
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
     networks:
       - mysql_network

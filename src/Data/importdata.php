@@ -8,7 +8,6 @@ $dbname = 'CSDL_VIEN_CHUC';
 $basePath = "/var/www/html/Data/csv"; 
 
 echo "Starting import process...\n";
-// Cấu trúc danh sách các nhóm bảng theo thứ tự nhập
 $importSequence = [
     "01_DanhMuc" => [
         "BACLUONG", "CAPLYLUANCHINHTRI", "CAPQUANLYNHANUOC", "CHITIETLUONG", 
@@ -31,7 +30,8 @@ $importSequence = [
 
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_TIMEOUT => 5
     ]);
     echo "Connected successfully!\n";
 } catch (PDOException $e) {
