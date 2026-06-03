@@ -2,7 +2,7 @@
 
 > **Hệ thống Quản lý Hồ sơ Lý lịch Viên chức** Một hệ thống cơ sở dữ liệu MySQL toàn diện, được chuẩn hóa và tích hợp trong ứng dụng web PHP triển khai bằng Docker nhằm quản lý hiệu quả hồ sơ viên chức, tự động hóa các quy trình nhân sự và hỗ trợ nhập liệu hàng loạt một cách liền mạch.
 
-### Ngôn ngữ: [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/mrh3llo/hqtcsdl-quanlylylichvienchuc/blob/master/README.md)
+- **Ngôn ngữ:** [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/mrh3llo/hqtcsdl-quanlylylichvienchuc/blob/master/README.md)
 ---
 
 ## 📌 Tổng quan & Mục tiêu
