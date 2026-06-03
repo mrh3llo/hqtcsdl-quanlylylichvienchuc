@@ -148,6 +148,10 @@ mysql -h 127.0.0.1 -P ${MYSQL_PORT} -u root -p
 
 Vui lòng tham khảo tệp DRG để biết chi tiết, vì cơ sở dữ liệu chứa quá nhiều thực thể để có thể theo dõi đầy đủ trong một sơ đồ duy nhất.
 
+### Thiết kế các chức năng Store procedure
+<p align="center"><img width="541" height="421" alt="StoreProcedure (1)" src="https://github.com/user-attachments/assets/9f30033d-06ee-478f-8f05-0428bfdc19b8" /></p>
+
+
 ## Kết luận
 
 Dự án này ứng dụng cho việc quản lý hồ sơ viên chức bằng cơ sở dữ liệu MySQL ở phía backend và giao diện PHP ở phía frontend. Hệ thống được thiết kế phục vụ phát triển và kiểm thử cục bộ thông qua Docker Compose.
