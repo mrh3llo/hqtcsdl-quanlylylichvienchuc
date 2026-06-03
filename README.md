@@ -1,7 +1,7 @@
 # 📋 HTCSDL_Quan_ly_Lich_vien_Chuc
 
 > **Civil Servant Personnel Record Management System** A comprehensive, normalized MySQL database system wrapped in a Dockerized PHP web application to efficiently manage civil servant records, automate HR workflows, and support seamless bulk data operations.
-
+- **Language:** [![Vie](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/mrh3llo/hqtcsdl-quanlylylichvienchuc/blob/master/README.vi.md)
 ---
 
 ## 📌 Overview & Objectives
