@@ -1,33 +1,52 @@
-# HTCSDL_Quan_ly_Lich_vien_Chuc
+# 📋 HTCSDL_Quan_ly_Lich_vien_Chuc
 
-## Project Report
+> **Civil Servant Personnel Record Management System** A comprehensive, normalized MySQL database system wrapped in a Dockerized PHP web application to efficiently manage civil servant records, automate HR workflows, and support seamless bulk data operations.
 
-### Overview
-This repository contains the database design and implementation for a civil servant personnel record management system. It includes schema definitions, initialization scripts, stored procedures, triggers, data import utilities, and a PHP web application interface.
+---
 
-### Objectives
-- Build a normalized MySQL database for managing personnel records.
-- Provide database views, triggers, and stored procedures for business logic.
-- Support bulk data import from CSV sources.
-- Make the system runnable in a Docker-based PHP + MySQL environment.
+## 📌 Overview & Objectives
 
-## Features
-- MySQL database schema and initialization scripts
-- Database views and triggers for data consistency
-- Stored procedures for HR operations
-- Data import script for batch CSV upload
-- PHP web application entry point at `src/index.php`
-- Docker Compose orchestration for MySQL, PHP/Apache, and importer services
+This repository contains the complete database design and containerized implementation for a civil servant personnel record management system. 
 
-## Repository Structure
-- `docker-compose.yaml` — defines MySQL, PHP web server, and importer containers
-- `dockerfile` — builds the PHP/Apache container with PDO MySQL support
-- `DB/` — SQL scripts for schema, views, triggers, roles, and procedures
-- `src/` — PHP application source code
-- `src/Data/importdata.php` — script to import CSV data into the database
-- `src/Data/csv/` — imported CSV dataset organized by categories
-- `src/include/db.inc.php` — database connection helper
-- `test/` — test artifacts and MySQL command examples
+### 🎯 Key Objectives:
+* **Structured Storage:** Build a highly normalized MySQL database to minimize redundancy and guarantee data integrity for institutional HR records.
+* **Automated Business Logic:** Implement robust database-level logic using **Views**, **Triggers**, and **Stored Procedures**.
+* **Streamlined Data Ingestion:** Enable robust batch data uploads from structured CSV formats.
+* **Isolated Deployment:** Provide an enterprise-ready, local development runtime environment powered by **Docker Compose**.
+
+---
+
+## ✨ Features
+
+* 🛠️ **Robust MySQL Schema:** Fully initialized relational database handling complex civil servant profiles.
+* 📊 **Optimized Views:** Pre-compiled database views for fast, secure, and aggregated data reporting.
+* ⚡ **Automated Triggers:** Real-time data validation and integrity constraints executed directly at the database layer.
+* 💼 **HR Stored Procedures:** High-performance procedural scripts handling standard CRUD, promotions, and organizational shifts.
+* 📥 **Automated Batch Importer:** Specialized PHP ingestion utility to automatically parse and seed datasets into MySQL.
+* 🐳 **Docker-First Architecture:** Microservices setup orchestration (`MySQL 8.4`, `PHP/Apache`, and an ephemeral `Importer` service).
+
+---
+
+## 📂 Repository Structure
+
+```text
+├── 🐳 docker-compose.yaml      # Multi-container Docker orchestration manifest
+├── 📦 dockerfile               # Custom PHP-Apache build with PDO MySQL extensions
+├── 🗄️ DB/                     # Core Database Layer
+│   ├── DB_innit.sql           # Core DDL schema definitions & tables
+│   ├── DB_views.sql           # Relational view layers for clean reporting
+│   ├── DB_triggers.sql        # Event-driven integrity rules
+│   ├── DB_roles.sql           # User privileges & RBAC configuration
+│   └── HR_procedure.sql       # High-level administrative operations
+├── 🌐 src/                    # Web Application Layer
+│   ├── index.php              # Application web entry point
+│   ├── include/
+│   │   └── db.inc.php         # PDO abstraction & database connection pool
+│   └── Data/                  # Seeding & Data Utilities
+│       ├── importdata.php     # Batch parsing execution engine
+│       └── csv/               # Raw categorized datasets
+└── 🧪 test/                   # Verification tools & testing scripts
+```
 
 ## Requirements
 - Docker Engine
@@ -76,30 +95,37 @@ Open a browser and visit:
 http://localhost:8080
 ```
 
-## Usage
+💡 Usage & Maintenance Manual
 
-### Database initialization
-MySQL is initialized automatically by Docker Compose using SQL files mounted into `/docker-entrypoint-initdb.d/`.
-Included scripts are:
-- `DB/DB_innit.sql`
-- `DB/DB_views.sql`
-- `DB/DB_triggers.sql`
-- `DB/DB_roles.sql`
-- `DB/HR_procedure.sql`
+### ⚙️ Automated Database Initialization Execution Order
+When the containers start up, the relational schema builds deterministically using this exact execution layer order:
+- `DB_innit.sql` (Tables & Primary Relationships)
+- `DB_views.sql` (Aggregated Representation Layers)
+- `DB_triggers.sql` (Automated Operational Validation Rules)
+- `DB_roles.sql` (Security Context Clearances & Roles mappings)
+- `HR_procedure.sql` (Functional API Layer endpoints)
 
 ### Data import
 The `importer` service runs `php /var/www/html/Data/importdata.php` after the database is ready. It loads CSV data from `src/Data/csv/` into the database.
 
-### Manual database access
-If you need to connect manually:
+### 🔌 Manual Database Connectivity Debugging
+If you need to enter the database engine directly via your host terminal context to review constraints:
 ```bash
 mysql -h 127.0.0.1 -P ${MYSQL_PORT} -u root -p
 ```
+## 📝 Architecture Guidelines
+Database Credentials Config: Managed in centralized architecture inside src/include/db.inc.php. Keep synced with changes to the .env settings.
+
+Race Condition Countermeasures: The database importer container uses a built-in delay script logic layer ensuring the mysql runtime loops have finalized table setups before data injection attempts begin.
 
 ## Notes
 - The PHP application root is `src/index.php`.
 - Database connection settings are maintained in `src/include/db.inc.php`.
 - The importer container waits briefly before executing the import script to ensure MySQL is ready.
+
+## 📐 System Architecture & Database Design
+### 🗺️ Entity-Relationship Diagram (ERD)
+Pleasae check out the file DRG for detail, as for the Database have too many entity to keep track of in a single picture.
 
 ## Conclusion
 This project is a complete proof-of-concept for managing civil servant records with a MySQL backend and PHP frontend. It is designed for local development and testing using Docker Compose.
