@@ -19,8 +19,9 @@ services:
       - ./DB/DB_views.sql:/docker-entrypoint-initdb.d/DB_views.sql
       - ./DB/HR_procedure.sql:/docker-entrypoint-initdb.d/HR_procedure.sql
       - ./DB/DB_triggers.sql:/docker-entrypoint-initdb.d/DB_triggers.sql
+      - ./DB/DB_Thanhtra_view.sql:/docker-entrypoint-initdb.d/DB_Thanhtra_view.sql
       - ./DB/DB_roles.sql:/docker-entrypoint-initdb.d/DB_roles.sql
-      - ./DB/VienChuc_Procedure.sql:/docker-entrypoint-initdb.d/VienChuc_Procedure.sql
+      - ./DB/VienChuc_procedure.sql:/docker-entrypoint-initdb.d/VienChuc_Procedure.sql
 
     ports:
       - "${MYSQL_PORT}:3306"
