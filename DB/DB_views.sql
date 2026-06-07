@@ -1,3 +1,5 @@
+-- this take every employee's information, EVERYONE
+
 CREATE VIEW VW_LAY_DS_VIENCHUC AS
 SELECT
     vc.MAVIENCHUC,
@@ -32,6 +34,7 @@ LEFT JOIN CHUCVU cv
     ON ccv.MACHUCVU = cv.MACHUCVU;
 
 
+-- this view is for HR to manage employee's work information
 CREATE VIEW VW_DS_CONGTAC AS
 SELECT
     vc.MAVIENCHUC,
@@ -52,7 +55,7 @@ JOIN CHUCDANH_NGHENGHIEP nn
     ON ccv.MANGHENGHIEP = nn.MANGHENGHIEP;
 
 
-
+-- this view is for HR to manage everyone's personal information
 CREATE VIEW VW_ThongKeNhanSu AS
 SELECT
     cq.TENCOQUAN,
@@ -75,6 +78,8 @@ GROUP BY
     dt.TENDANTOC,
     tg.TENTONGIAO;
 
+
+--  this view is for HR to manage everyone reward information
 CREATE VIEW VW_KHENTHUONG AS
 SELECT
     vc.MAVIENCHUC,
@@ -89,6 +94,7 @@ JOIN VIENCHUC vc
 JOIN HINHTHUCKHENTHUONG htkt
     ON dkt.MAHINHTHUCKHENTHUONG = htkt.MAHINHTHUCKHENTHUONG;
 
+-- same as above but for discipline information
 CREATE VIEW VW_KYLUAT AS
 SELECT
     vc.MAVIENCHUC,

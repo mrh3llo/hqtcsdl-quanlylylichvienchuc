@@ -11,8 +11,8 @@ BEGIN
         SET db_role = 'admin_role';
     ELSEIF p_role = 'hr' THEN
         SET db_role = 'hr_role';
-    ELSEIF p_role = 'manager' THEN
-        SET db_role = 'manager_role';
+    ELSEIF p_role = 'vienchuc' THEN
+        SET db_role = 'vienchuc_role';
     ELSE
         SET db_role = 'viewer_role';
     END IF;
@@ -96,14 +96,14 @@ BEGIN
     --  old role
     IF old_role = 'admin' THEN SET old_db_role = 'admin_role';
     ELSEIF old_role = 'hr' THEN SET old_db_role = 'hr_role';
-    ELSEIF old_role = 'manager' THEN SET old_db_role = 'manager_role';
+    ELSEIF old_role = 'vienchuc' THEN SET old_db_role = 'vienchuc_role';
     ELSE SET old_db_role = 'viewer_role';
     END IF;
 
     -- new role
     IF p_role = 'admin' THEN SET new_db_role = 'admin_role';
     ELSEIF p_role = 'hr' THEN SET new_db_role = 'hr_role';
-    ELSEIF p_role = 'manager' THEN SET new_db_role = 'manager_role';
+    ELSEIF p_role = 'vienchuc' THEN SET new_db_role = 'vienchuc_role';
     ELSE SET new_db_role = 'viewer_role';
     END IF;
 
