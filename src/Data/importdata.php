@@ -1,4 +1,7 @@
 <?php
+ob_implicit_flush(true);
+while (ob_get_level()) ob_end_clean();
+
 $host = 'mysql'; 
 $port = '3306'; 
 $user = 'root'; 
@@ -28,15 +31,36 @@ $importSequence = [
     ]
 ];
 
-try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname", $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_TIMEOUT => 5
-    ]);
-    echo "Connected successfully!\n";
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+$maxAttempts = 20; // Try for up to 60 seconds total
+$attempt = 0;
+$pdo = null;
+
+echo "Connecting to database at host: '$host' on port: '$port'...\n";
+
+while ($attempt < $maxAttempts) {
+    try {
+        $attempt++;
+        $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 2 
+        ]);
+    
+        echo "Connected successfully on attempt #$attempt!\n";
+        break; 
+        
+    } catch (Throwable $e) {
+        echo "Attempt #$attempt failed (MySQL might still be initializing...). Retrying in 3 seconds...\n";
+        
+        if ($attempt >= $maxAttempts) {
+            die("CRITICAL CONNECTION ERROR: Failed to connect after $maxAttempts attempts. " . $e->getMessage() . "\n");
+        }
+        
+        sleep(3);
+    }
 }
+
+
+
 
 function importCSV(PDO $pdo, string $tableName, string $csvPath) {
     if (!file_exists($csvPath)) {
