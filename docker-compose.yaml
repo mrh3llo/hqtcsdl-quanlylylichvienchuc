@@ -18,7 +18,7 @@ services:
       - mysql_volume:/var/lib/mysql
       - ./DB/01_DB_innit.sql:/docker-entrypoint-initdb.d/01_DB_innit.sql
       - ./DB/02_DB_views.sql:/docker-entrypoint-initdb.d/02_DB_views.sql
-      - ./DB/04_DB_Thanhtra_view.sql:/docker-entrypoint-initdb.d/04_DB_Thanhtra_view.sql
+      - ./DB/04_DB_Thongke_view.sql:/docker-entrypoint-initdb.d/04_DB_Thongke_view.sql
       - ./DB/05_HR_procedure.sql:/docker-entrypoint-initdb.d/05_HR_procedure.sql
       - ./DB/06_VienChuc_procedure.sql:/docker-entrypoint-initdb.d/06_VienChuc_Procedure.sql
       - ./DB/07_DB_triggers.sql:/docker-entrypoint-initdb.d/07_DB_triggers.sql

@@ -6,6 +6,7 @@ SELECT
     CONCAT(vc.HO, ' ', vc.TENLOT, ' ', vc.TEN) AS HOTEN,
     vc.NGAYSINH,
     vc.GIOITINH,
+    vc.ANHDAIDIEN,
     dt.TENDANTOC,
     tg.TENTONGIAO,
 
