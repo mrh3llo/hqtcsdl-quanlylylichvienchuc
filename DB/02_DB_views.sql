@@ -35,7 +35,7 @@ LEFT JOIN CHUCVU cv
     ON ccv.MACHUCVU = cv.MACHUCVU;
 
 
--- this view is for HR to manage employee's work information
+-- ! this view is for HR to manage employee's work information
 CREATE VIEW VW_DS_CONGTAC AS
 SELECT
     vc.MAVIENCHUC,
@@ -56,7 +56,7 @@ JOIN CHUCDANH_NGHENGHIEP nn
     ON ccv.MANGHENGHIEP = nn.MANGHENGHIEP;
 
 
--- this view is for HR to manage everyone's personal information
+-- ! this view is for HR to manage everyone's personal information
 CREATE VIEW VW_ThongKeNhanSu AS
 SELECT
     cq.TENCOQUAN,
@@ -80,7 +80,7 @@ GROUP BY
     tg.TENTONGIAO;
 
 
---  this view is for HR to manage everyone reward information
+-- ! this view is for HR to manage everyone reward information
 CREATE VIEW VW_KHENTHUONG AS
 SELECT
     vc.MAVIENCHUC,

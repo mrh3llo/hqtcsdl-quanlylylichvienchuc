@@ -1,0 +1,188 @@
+-- ==========================================================
+-- 1. POPULATE INDEPENDENT LOOKUP TABLES
+-- ==========================================================
+
+-- Table: TINHTHANH (Required first for XAPHUONG)
+INSERT INTO TINHTHANH (MATINHTHANH, TENTINHTHANH) VALUES
+('TT001', 'Thành phố Hà Nội'),
+('TT002', 'Thành phố Hồ Chí Minh'),
+('TT003', 'Thành phố Đà Nẵng'),
+('TT004', 'Thành phố Cần Thơ'),
+('TT005', 'Tỉnh Thừa Thiên Huế');
+
+-- Table: BACLUONG
+INSERT INTO BACLUONG (MABACLUONG) VALUES
+('BL001'), ('BL002'), ('BL003'), ('BL004'), ('BL005');
+
+-- Table: CAPLYLUANCHINHTRI
+INSERT INTO CAPLYLUANCHINHTRI (MACAPCT, TENCAPCT) VALUES
+('CT001', 'Sơ cấp'),
+('CT002', 'Trung cấp'),
+('CT003', 'Cao cấp'),
+('CT004', 'Cử nhân');
+
+-- Table: CAPQUANLYNHANUOC
+INSERT INTO CAPQUANLYNHANUOC (MACAPQLNN, TENCAPQLNN) VALUES
+('QL001', 'Chuyên viên'),
+('QL002', 'Chuyên viên chính'),
+('QL003', 'Chuyên viên cao cấp'),
+('QL004', 'Bồi dưỡng lãnh đạo cấp phòng');
+
+-- Table: CHITIETLUONG
+INSERT INTO CHITIETLUONG (MACHITIETLUONG) VALUES
+('TL001'), ('TL002'), ('TL003'), ('TL004'), ('TL005');
+
+-- Table: CHUCDANH_NGHENGHIEP
+INSERT INTO CHUCDANH_NGHENGHIEP (MANGHENGHIEP, TENNGHENGHIEP) VALUES
+('NN001', 'Giảng viên'),
+('NN002', 'Giảng viên chính'),
+('NN003', 'Trợ giảng'),
+('NN004', 'Chuyên viên hành chính'),
+('NN005', 'Kế toán viên');
+
+-- Table: CHUCVU
+INSERT INTO CHUCVU (MACHUCVU, TENCHUCVU) VALUES
+('CV001', 'Trưởng phòng'),
+('CV002', 'Phó trưởng phòng'),
+('CV003', 'Hiệu trưởng'),
+('CV004', 'Phó hiệu trưởng'),
+('CV005', 'Trưởng khoa');
+
+-- Table: CHUNGCHITINHOC
+INSERT INTO CHUNGCHITINHOC (MACHUNGCHITINHOC, CHUNGCHITINHOC) VALUES
+('TH001', 'Ứng dụng CNTT cơ bản'),
+('TH002', 'Ứng dụng CNTT nâng cao'),
+('TH003', 'IC3 Digital Literacy'),
+('TH004', 'MOS (Word/Excel/PPT)');
+
+-- Table: CHUYENMON
+INSERT INTO CHUYENMON (MACHUYENMON, TENCHUYENMON) VALUES
+('CM001', 'Khoa học Máy tính'),
+('CM002', 'Quản trị Kinh doanh'),
+('CM003', 'Ngôn ngữ Anh'),
+('CM004', 'Luật học'),
+('CM005', 'Kế toán');
+
+-- Table: COQUAN
+INSERT INTO COQUAN (MACOQUAN, TENCOQUAN) VALUES
+('CQ001', 'Trường Đại học Bách Khoa'),
+('CQ002', 'Trường Đại học Khoa học Tự nhiên'),
+('CQ003', 'Sở Giáo dục và Đào tạo'),
+('CQ004', 'Phòng Tổ chức Cán bộ'),
+('CQ005', 'Phòng Kế hoạch Tài chính');
+
+-- Table: DANHHIEU
+INSERT INTO DANHHIEU (MADANHHIEU, TENDANHHIEU) VALUES
+('DH001', 'Nhà giáo Nhân dân'),
+('DH002', 'Nhà giáo Ưu tú'),
+('DH003', 'Chiến sĩ thi đua cấp cơ sở'),
+('DH004', 'Chiến sĩ thi đua cấp bộ');
+
+-- Table: DANTOC
+INSERT INTO DANTOC (MADANTOC, TENDANTOC) VALUES
+('DT001', 'Kinh'),
+('DT002', 'Tày'),
+('DT003', 'Thái'),
+('DT004', 'Mường'),
+('DT005', 'Khmer');
+
+-- Table: HANGTHUONGBINH
+INSERT INTO HANGTHUONGBINH (MAHANGTHUONGBINH, TENHANGTHUONGBINH) VALUES
+('TB001', 'Thương binh hạng 1/4'),
+('TB002', 'Thương binh hạng 2/4'),
+('TB003', 'Thương binh hạng 3/4'),
+('TB004', 'Thương binh hạng 4/4');
+
+-- Table: HINHTHUCKHENTHUONG
+INSERT INTO HINHTHUCKHENTHUONG (MAHINHTHUCKHENTHUONG, TENHINHTHUCKHENTHUONG) VALUES
+('KT001', 'Bằng khen của Thủ tướng'),
+('KT002', 'Bằng khen của Bộ trưởng'),
+('KT003', 'Giấy khen của Hiệu trưởng'),
+('KT004', 'Huân chương Lao động hạng Ba');
+
+-- Table: HINHTHUCKYLUAT
+INSERT INTO HINHTHUCKYLUAT (MAHINHTHUCKYLUAT, TENHINHTHUCKYLUAT) VALUES
+('KL001', 'Khiển trách'),
+('KL002', 'Cảnh cáo'),
+('KL003', 'Hạ bậc lương'),
+('KL004', 'Buộc thôi việc');
+
+-- Table: HOCHAM
+INSERT INTO HOCHAM (MAHOCHAM, TENHOCHAM) VALUES
+('HH001', 'Giáo sư'),
+('HH002', 'Phó Giáo sư');
+
+-- Table: NGOAINGU
+INSERT INTO NGOAINGU (MANGOAINGU, TENNGOAINGU, CAPDO) VALUES
+('NN01A', 'Tiếng Anh', 'B1'),
+('NN01B', 'Tiếng Anh', 'B2'),
+('NN01C', 'Tiếng Anh', 'C1'),
+('NN02A', 'Tiếng Pháp', 'A2'),
+('NN03A', 'Tiếng Trung', 'HSK4');
+
+-- Table: NHOMNGACH
+INSERT INTO NHOMNGACH (MANHOMNGACH, TENNHOMNGACH) VALUES
+('A001', 'Viên chức loại A1'),
+('A002', 'Viên chức loại A2'),
+('A003', 'Viên chức loại A3'),
+('B001', 'Viên chức loại B');
+
+-- Table: QUANHAM
+INSERT INTO QUANHAM (MAQUANHAM, TENQUANHAM) VALUES
+('QH001', 'Thiếu úy'),
+('QH002', 'Trung úy'),
+('QH003', 'Thượng úy'),
+('QH004', 'Đại úy'),
+('QH005', 'Thiếu tá');
+
+-- Table: THONGTINQUANDOI
+INSERT INTO THONGTINQUANDOI (MATTD_QD) VALUES
+('QD001'), ('QD002'), ('QD003');
+
+-- Table: TINHTRANGSUCKHOE
+INSERT INTO TINHTRANGSUCKHOE (MASUCKHOE, TINHTRANGSUCKHOE) VALUES
+('SK001', 'Tốt (Loại 1)'),
+('SK002', 'Khá (Loại 2)'),
+('SK003', 'Trung bình (Loại 3)'),
+('SK004', 'Yếu (Loại 4)');
+
+-- Table: TOCHUCDOANTHECHINHTRIXAHOI
+INSERT INTO TOCHUCDOANTHECHINHTRIXAHOI (MATOCHUCDTCTXH, TENTOCHUCDTCTXH) VALUES
+('DT001', 'Đảng Cộng sản Việt Nam'),
+('DT002', 'Đoàn TNCS Hồ Chí Minh'),
+('DT003', 'Công đoàn Cơ sở');
+
+-- Table: TONGIAO
+INSERT INTO TONGIAO (MATONGIAO, TENTONGIAO) VALUES
+('TG001', 'Không'),
+('TG002', 'Phật giáo'),
+('TG003', 'Công giáo'),
+('TG004', 'Cao Đài'),
+('TG005', 'Hòa Hảo');
+
+-- Table: TRINHDOHOCVAN
+INSERT INTO TRINHDOHOCVAN (MATRINHDO, TRINHDOGIAODUCPHOTHONG, TRINHDONGHIEPVUCHUYENNGANH) VALUES
+('TD001', '12/12', 'Cử nhân'),
+('TD002', '12/12', 'Thạc sĩ'),
+('TD003', '12/12', 'Tiến sĩ'),
+('TD004', '12/12', 'Cao đẳng');
+
+
+-- ==========================================================
+-- 2. POPULATE DEPENDENT PROFILE TABLE: XAPHUONG
+-- ==========================================================
+
+-- Table: XAPHUONG (Maps back to TINHTHANH elements generated above)
+INSERT INTO XAPHUONG (MAXAPHUONG, MATINHTHANH, TENXAPHUONG) VALUES
+-- Belonging to TT001 (Hà Nội)
+('XP001', 'TT001', 'Phường Dịch Vọng Hậu'),
+('XP002', 'TT001', 'Phường Bách Khoa'),
+-- Belonging to TT002 (TP. HCM)
+('XP003', 'TT002', 'Phường Bến Nghé'),
+('XP004', 'TT002', 'Phường Thảo Điền'),
+-- Belonging to TT003 (Đà Nẵng)
+('XP005', 'TT003', 'Phường Hải Châu I'),
+-- Belonging to TT004 (Cần Thơ)
+('XP006', 'TT004', 'Phường An Khánh'),
+-- Belonging to TT005 (Thừa Thiên Huế)
+('XP007', 'TT005', 'Phường Vĩnh Ninh');

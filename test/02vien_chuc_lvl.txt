@@ -1,0 +1,26 @@
+-- Employee 1: Nguyen Van A (Role: admin)
+CALL SP_THEM_VIENCHUC(
+    'VC00000001', 'DH003', 'TG001', 'HH002', 'TD003', 'DT001', 
+    NULL, 'XP001', 'XP002', 'Nguyễn', 'Văn', 'An', 'Bảo An', 
+    '1985-05-15', 'Nam', '2010-09-01', 'SH00001', NULL, '1234567890', 
+    'Cục Cảnh sát QLHC về trật tự xã hội', '2021-01-10', 'BH00000001', 'O', 
+    '2020-11-20', '2018-05-19', 'admin'
+);
+
+-- Employee 2: Tran Thi B (Role: hr)
+CALL SP_THEM_VIENCHUC(
+    'VC00000002', NULL, 'TG002', NULL, 'TD002', 'DT001', 
+    NULL, 'XP003', 'XP003', 'Trần', 'Thị', 'Bình', NULL, 
+    '1990-10-22', 'Nữ', '2015-03-16', 'SH00002', NULL, '0987654321', 
+    'Cục Cảnh sát QLHC về trật tự xã hội', '2021-06-15', 'BH00000002', 'A', 
+    NULL, NULL, 'hr'
+);
+
+-- Employee 3: Le Van C (Role: vienchuc)
+CALL SP_THEM_VIENCHUC(
+    'VC00000003', NULL, 'TG001', NULL, 'TD001', 'DT002', 
+    'TB003', 'XP006', 'XP007', 'Lê', 'Văn', 'Cường', NULL, 
+    '1988-12-05', 'Nam', '2012-11-01', 'SH00003', NULL, '0112233445', 
+    'Công an tỉnh Thừa Thiên Huế', '2022-03-20', 'BH00000003', 'B', 
+    NULL, NULL, 'vienchuc'
+);
