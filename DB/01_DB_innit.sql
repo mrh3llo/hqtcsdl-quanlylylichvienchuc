@@ -194,7 +194,7 @@ CREATE TABLE CO_TINHTRANGSK (
    MAVIENCHUC           CHAR(10)             NOT NULL,
    MASUCKHOE            CHAR(5)              NOT NULL,
    CANNANG              DECIMAL(4,2)         NULL,
-   CHIEUCAO             TINYINT              NULL,
+   CHIEUCAO             UNSIGNED TINYINT              NULL,
    THOIGIANGHINHAN      DATETIME             NULL,
    CONSTRAINT PK_CO_TINHTRANGSK PRIMARY KEY (MAVIENCHUC, MASUCKHOE)
 );
