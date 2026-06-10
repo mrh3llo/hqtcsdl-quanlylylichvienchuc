@@ -1,19 +1,18 @@
 DELIMITER $$
-
 CREATE TRIGGER TRG_CO_CHUCVU_BI
 BEFORE INSERT ON CO_CHUCVU
 FOR EACH ROW
 BEGIN
     DECLARE v_count INT DEFAULT 0;
 
-    -- Start date must be before end date
+    -- End date must be after start date
     IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
        AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Thoi gian ket thuc phai lon hon thoi gian giu chuc vu';
+        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU must be >= THOIGIANGIUCHUCVU';
     END IF;
 
-    -- Only one active position
+    -- Only one active position allowed
     IF NEW.THOIGIANKETTHUCCHUCVU IS NULL THEN
 
         SELECT COUNT(*)
@@ -24,44 +23,12 @@ BEGIN
 
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Vien chuc dang co mot chuc vu chua ket thuc';
+            SET MESSAGE_TEXT = 'Employee already has an active position';
         END IF;
 
     END IF;
 
-    -- Cannot add new position if old one is still active
-    SELECT COUNT(*)
-    INTO v_count
-    FROM CO_CHUCVU
-    WHERE MAVIENCHUC = NEW.MAVIENCHUC
-      AND (
-            THOIGIANKETTHUCCHUCVU IS NULL
-            OR THOIGIANKETTHUCCHUCVU > NEW.THOIGIANGIUCHUCVU
-          );
-
-    IF v_count > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Phai ket thuc chuc vu cu truoc khi them chuc vu moi';
-    END IF;
-
-END$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER TRG_CO_CHUCVU_BU
-BEFORE UPDATE ON CO_CHUCVU
-FOR EACH ROW
-BEGIN
-    DECLARE v_count INT DEFAULT 0;
-
-    IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
-       AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Thoi gian ket thuc phai lon hon thoi gian giu chuc vu';
-    END IF;
-
+    -- No overlapping periods
     SELECT COUNT(*)
     INTO v_count
     FROM CO_CHUCVU
@@ -76,11 +43,77 @@ BEGIN
 
     IF v_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Khoang thoi gian giu chuc vu bi trung lap';
+        SET MESSAGE_TEXT = 'Position period overlaps another position';
     END IF;
+
+END$$
+
+-- ! TRIGGER TRG_CO_CHUCVU_BU
+
+CREATE TRIGGER TRG_CO_CHUCVU_BU
+BEFORE UPDATE ON CO_CHUCVU
+FOR EACH ROW
+BEGIN
+    DECLARE v_count INT DEFAULT 0;
+
+    -- End date must be after start date
+    IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
+       AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU must be >= THOIGIANGIUCHUCVU';
+    END IF;
+
+    -- Only one active position allowed
+    IF NEW.THOIGIANKETTHUCCHUCVU IS NULL THEN
+
+        SELECT COUNT(*)
+        INTO v_count
+        FROM CO_CHUCVU
+        WHERE MAVIENCHUC = NEW.MAVIENCHUC
+          AND THOIGIANKETTHUCCHUCVU IS NULL
+          AND NOT (
+                MAVIENCHUC = OLD.MAVIENCHUC
+            AND MACHUCVU = OLD.MACHUCVU
+            AND MACOQUAN = OLD.MACOQUAN
+            AND MANGHENGHIEP = OLD.MANGHENGHIEP
+          );
+
+        IF v_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Employee already has an active position';
+        END IF;
+
+    END IF;
+
+    -- No overlapping periods
+    SELECT COUNT(*)
+    INTO v_count
+    FROM CO_CHUCVU
+    WHERE MAVIENCHUC = NEW.MAVIENCHUC
+      AND NOT (
+            MAVIENCHUC = OLD.MAVIENCHUC
+        AND MACHUCVU = OLD.MACHUCVU
+        AND MACOQUAN = OLD.MACOQUAN
+        AND MANGHENGHIEP = OLD.MANGHENGHIEP
+      )
+      AND (
+            COALESCE(NEW.THOIGIANKETTHUCCHUCVU,'9999-12-31')
+                >= THOIGIANGIUCHUCVU
+        AND
+            COALESCE(THOIGIANKETTHUCCHUCVU,'9999-12-31')
+                >= NEW.THOIGIANGIUCHUCVU
+      );
+
+    IF v_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Position period overlaps another position';
+    END IF;
+
 END$$
 
 DELIMITER ;
+
+
 
 DELIMITER $$
 
