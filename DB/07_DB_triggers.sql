@@ -336,3 +336,120 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+--   !  TRIGGER FOR LOG
+
+DELIMITER $$
+
+CREATE TRIGGER TR_VIENCHUC_AI
+AFTER INSERT ON VIENCHUC
+FOR EACH ROW
+BEGIN
+    INSERT INTO AUDIT_LOG
+    (
+        TABLE_NAME,
+        RECORD_ID,
+        ACTION_TYPE,
+        OLD_DATA,
+        NEW_DATA,
+        UPDATED_BY
+    )
+    VALUES
+    (
+        'VIENCHUC',
+        NEW.MAVIENCHUC,
+        'INSERT',
+        NULL,
+
+        JSON_OBJECT(
+            'MAVIENCHUC', NEW.MAVIENCHUC,
+            'HO', NEW.HO,
+            'TENLOT', NEW.TENLOT,
+            'TEN', NEW.TEN
+        ),
+
+        CURRENT_USER()
+    );
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER TR_VIENCHUC_AU
+AFTER UPDATE ON VIENCHUC
+FOR EACH ROW
+BEGIN
+    INSERT INTO AUDIT_LOG
+    (
+        TABLE_NAME,
+        RECORD_ID,
+        ACTION_TYPE,
+        OLD_DATA,
+        NEW_DATA,
+        UPDATED_BY
+    )
+    VALUES
+    (
+        'VIENCHUC',
+        NEW.MAVIENCHUC,
+        'UPDATE',
+
+        JSON_OBJECT(
+            'MAVIENCHUC', OLD.MAVIENCHUC,
+            'HO', OLD.HO,
+            'TENLOT', OLD.TENLOT,
+            'TEN', OLD.TEN
+        ),
+
+        JSON_OBJECT(
+            'MAVIENCHUC', NEW.MAVIENCHUC,
+            'HO', NEW.HO,
+            'TENLOT', NEW.TENLOT,
+            'TEN', NEW.TEN
+        ),
+
+        CURRENT_USER()
+    );
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER TR_VIENCHUC_AD
+AFTER DELETE ON VIENCHUC
+FOR EACH ROW
+BEGIN
+    INSERT INTO AUDIT_LOG
+    (
+        TABLE_NAME,
+        RECORD_ID,
+        ACTION_TYPE,
+        OLD_DATA,
+        NEW_DATA,
+        UPDATED_BY
+    )
+    VALUES
+    (
+        'VIENCHUC',
+        OLD.MAVIENCHUC,
+        'DELETE',
+
+        JSON_OBJECT(
+            'MAVIENCHUC', OLD.MAVIENCHUC,
+            'HO', OLD.HO,
+            'TENLOT', OLD.TENLOT,
+            'TEN', OLD.TEN
+        ),
+
+        NULL,
+
+        CURRENT_USER()
+    );
+END$$
+
+DELIMITER ;
+
+-- ! 

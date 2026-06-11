@@ -132,8 +132,24 @@ CREATE PROCEDURE SP_XOA_USERS (
     IN p_mavienchuc CHAR(10)
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        RESIGNAL;
+    END;
+
+    SET @sql = CONCAT(
+        "DROP USER IF EXISTS '",
+        p_mavienchuc,
+        "'@'%'"
+    );
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+
     DELETE FROM USERS
     WHERE MAVIENCHUC = p_mavienchuc;
+
 END$$
 
 DELIMITER ;
