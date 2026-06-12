@@ -14,7 +14,7 @@ BEGIN
     ELSEIF p_role = 'vienchuc' THEN
         SET db_role = 'vienchuc_role';
     ELSE
-        SET db_role = 'viewer_role';
+        SET db_role = 'thanhtra_role';
     END IF;
 
     INSERT INTO USERS (MAVIENCHUC, PASSWORD, ROLE)
@@ -97,14 +97,14 @@ BEGIN
     IF old_role = 'admin' THEN SET old_db_role = 'admin_role';
     ELSEIF old_role = 'hr' THEN SET old_db_role = 'hr_role';
     ELSEIF old_role = 'vienchuc' THEN SET old_db_role = 'vienchuc_role';
-    ELSE SET old_db_role = 'viewer_role';
+    ELSE SET old_db_role = 'thanhtra_role';
     END IF;
 
     -- new role
     IF p_role = 'admin' THEN SET new_db_role = 'admin_role';
     ELSEIF p_role = 'hr' THEN SET new_db_role = 'hr_role';
     ELSEIF p_role = 'vienchuc' THEN SET new_db_role = 'vienchuc_role';
-    ELSE SET new_db_role = 'viewer_role';
+    ELSE SET new_db_role = 'thanhtra_role';
     END IF;
 
     -- update system
