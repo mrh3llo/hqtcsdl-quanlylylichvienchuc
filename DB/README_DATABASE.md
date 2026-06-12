@@ -2,141 +2,83 @@
 
 This document maps the database objects in this project and shows how they depend on each other.
 
-## High-Level Dependency Map
+## Database Architecture Diagram
 
-```mermaid
+flowchart TB
+
+    PERSONNEL["Personnel<br/>VIENCHUC"]
+    MASTER["Master Data<br/>20+ Tables"]
+    REL["Relationship Tables<br/>15+ Tables"]
+    REPORT["Views"]
+    PROC["Stored Procedures"]
+    SEC["Users & Audit"]
+
+    MASTER --> PERSONNEL
+    PERSONNEL --> REL
+    REL --> REPORT
+
+    PERSONNEL --> SEC
+
+    MASTER --> PROC
+    PERSONNEL --> PROC
+    REL --> PROC
+
+### 1. Core Entity Model
+
 flowchart LR
-    subgraph Master_Data
-        DANTOC
-        TONGIAO
-        TRINHDOHOCVAN
-        HANGTHUONGBINH
-        DANHHIEU
-        HOCHAM
-        XAPHUONG
-        TINHTHANH
-        CHUCVU
-        COQUAN
-        CHUCDANH_NGHENGHIEP
-        BACLUONG
-        NHOMNGACH
-        CHITIETLUONG
-        NGOAINGU
-        CHUNGCHITINHOC
-        TINHTRANGSUCKHOE
-        HINHTHUCKHENTHUONG
-        HINHTHUCKYLUAT
-        THONGTINQUANDOI
-        TOCHUCDOANTHECHINHTRIXAHOI
-    end
-
-    subgraph Core_Table
-        VIENCHUC
-        USERS
-        AUDIT_LOG
-    end
-
-    subgraph Relationship_Tables
-        CO_CHUCVU
-        CO_HESOLUONG
-        CO_HOKHAUTHUONGTRU
-        CO_TAMTRU
-        CO_TINHTRANGSK
-        CO_TRDCM_CAONHAT
-        CO_TRD_NGOAINGU
-        CO_TRD_TINHOC
-        THUOC_QUANDOI
-        THUOC_TOCHUCDOANTHECHINHTRIXAHOI
-        THUOC_NHOM_NGACH
-        TUYENDUNG
-        DUOC_KHENTHUONG
-        BI_KYLUAT
-        CO_CAPLYLUANCHINHTRI
-        CO_CAPQUANLYNHANUOC
-    end
-
-    subgraph Views
-        VW_LAY_DS_VIENCHUC
-        VW_DS_CONGTAC
-        VW_ThongKeNhanSu
-        VW_KHENTHUONG
-        VW_KYLUAT
-    end
-
-    subgraph Procedures
-        SP_THEM_USERS
-        SP_THEM_VIENCHUC
-        SP_CAPNHAT_USERS
-        SP_XOA_USERS
-        SP_CAPNHAT_VIENCHUC
-        SP_XOA_VIENCHUC
-        SP_CAPNHAT_DUOC_KHENTHUONG
-        SP_XOA_DUOC_KHENTHUONG
-        SP_CAPNHAT_BI_KYLUAT
-        SP_XOA_BI_KYLUAT
-        SP_CAPNHAT_CO_CAPLYLUANCHINHTRI
-        SP_XOA_CO_CAPLYLUANCHINHTRI
-        SP_CAPNHAT_CO_CAPQUANLYNHANUOC
-        SP_XOA_CO_CAPQUANLYNHANUOC
-        SP_CAPNHAT_CO_CHUCVU
-        SP_XOA_CO_CHUCVU
-        SP_CAPNHAT_CO_HESOLUONG
-        SP_XOA_CO_HESOLUONG
-        SP_CAPNHAT_CO_HOKHAUTHUONGTRU
-        SP_XOA_CO_HOKHAUTHUONGTRU
-        SP_CAPNHAT_CO_TAMTRU
-        SP_XOA_CO_TAMTRU
-        SP_CAPNHAT_CO_TINHTRANGSK
-        SP_XOA_CO_TINHTRANGSK
-        SP_CAPNHAT_CO_TRDCM_CAONHAT
-        SP_XOA_CO_TRDCM_CAONHAT
-        SP_CAPNHAT_CO_TRD_NGOAINGU
-        SP_XOA_CO_TRD_NGOAINGU
-        SP_CAPNHAT_CO_TRD_TINHOC
-        SP_XOA_CO_TRD_TINHOC
-        SP_CAPNHAT_THUOC_QUANDOI
-        SP_XOA_THUOC_QUANDOI
-        SP_CAPNHAT_THUOC_TCDT_CTXH
-        SP_XOA_THUOC_TCDT_CTXH
-        SP_CAPNHAT_TUYENDUNG
-        SP_XOA_TUYENDUNG
-        SP_CAPNHAT_XAPHUONG
-        SP_XOA_XAPHUONG
-        SP_CAPNHAT_THUOC_NHOMNGACH
-        SP_XOA_NHOMNGACH
-        SP_CAPNHAT_MADANHHIEU
-        SP_CAPNHAT_MATONGIAO
-        SP_CAPNHAT_MAHOCHAM
-        SP_CAPNHAT_MATRINHDO
-        SP_CAPNHAT_MAHANGTHUONGBINH
-        SP_CAPNHAT_MAXAPHUONG
-        SP_CAPNHAT_XAP_MAXAPHUONG
-        SP_CAPNHAT_HO
-        SP_CAPNHAT_TENLOT
-        SP_CAPNHAT_TEN
-        SP_CAPNHAT_TENKHAC
-        SP_CAPNHAT_GIOITINH
-        SP_CAPNHAT_NGAYTUYENDUNG
-        SP_CAPNHAT_SOHIEUVIENCHUC
-        SP_CAPNHAT_ANHDAIDIEN
-        SP_CAPNHAT_SOBAOHIEM
-        SP_CAPNHAT_NAMDUOCPHONGHOCHAM
-        SP_CAPNHAT_NAMDUOCPHONGDANHHIEU
-    end
-
-    Master_Data --> VIENCHUC
-    Master_Data --> Relationship_Tables
-    VIENCHUC --> Relationship_Tables
     VIENCHUC --> USERS
     VIENCHUC --> AUDIT_LOG
 
-    VIENCHUC --> Views
-    Relationship_Tables --> Views
+    VIENCHUC --> CO_CHUCVU
+    VIENCHUC --> CO_HESOLUONG
+    VIENCHUC --> CO_TINHTRANGSK
+    VIENCHUC --> TUYENDUNG
+    VIENCHUC --> DUOC_KHENTHUONG
+    VIENCHUC --> BI_KYLUAT
 
-    VIENCHUC --> Procedures
-    Relationship_Tables --> Procedures
-    Master_Data --> Procedures
-```
+### 2. Master Data Dependencies
+
+flowchart LR
+    DANTOC --> VIENCHUC
+    TONGIAO --> VIENCHUC
+    TRINHDOHOCVAN --> VIENCHUC
+    DANHHIEU --> VIENCHUC
+    HOCHAM --> VIENCHUC
+    XAPHUONG --> VIENCHUC
+
+### 3. Personnel Relationships
+
+flowchart LR
+    VIENCHUC --> CO_CHUCVU
+    CHUCVU --> CO_CHUCVU
+    COQUAN --> CO_CHUCVU
+
+    VIENCHUC --> CO_HESOLUONG
+    BACLUONG --> CO_HESOLUONG
+    NHOMNGACH --> CO_HESOLUONG
+
+### 4. Reporting Layer
+
+flowchart LR
+    VIENCHUC --> VW_LAY_DS_VIENCHUC
+    VIENCHUC --> VW_DS_CONGTAC
+
+    CO_CHUCVU --> VW_DS_CONGTAC
+    CO_HESOLUONG --> VW_ThongKeNhanSu
+
+    DUOC_KHENTHUONG --> VW_KHENTHUONG
+    BI_KYLUAT --> VW_KYLUAT
+
+### 5. Procedures Layers
+
+flowchart LR
+    SP_THEM_VIENCHUC --> VIENCHUC
+    SP_CAPNHAT_VIENCHUC --> VIENCHUC
+    SP_XOA_VIENCHUC --> VIENCHUC
+
+    SP_CAPNHAT_CO_CHUCVU --> CO_CHUCVU
+    SP_CAPNHAT_CO_HESOLUONG --> CO_HESOLUONG
+    SP_CAPNHAT_TUYENDUNG --> TUYENDUNG
 
 ## What Depends On What
 
