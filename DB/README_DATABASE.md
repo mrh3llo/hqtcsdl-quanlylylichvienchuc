@@ -4,6 +4,7 @@ This document maps the database objects in this project and shows how they depen
 
 ## Database Architecture Diagram
 
+```mermaid
 flowchart TB
 
     PERSONNEL["Personnel<br/>VIENCHUC"]
@@ -22,9 +23,9 @@ flowchart TB
     MASTER --> PROC
     PERSONNEL --> PROC
     REL --> PROC
-
+```
 ### 1. Core Entity Model
-
+```mermaid
 flowchart LR
     VIENCHUC --> USERS
     VIENCHUC --> AUDIT_LOG
@@ -35,9 +36,9 @@ flowchart LR
     VIENCHUC --> TUYENDUNG
     VIENCHUC --> DUOC_KHENTHUONG
     VIENCHUC --> BI_KYLUAT
-
+```
 ### 2. Master Data Dependencies
-
+```mermaid
 flowchart LR
     DANTOC --> VIENCHUC
     TONGIAO --> VIENCHUC
@@ -45,9 +46,9 @@ flowchart LR
     DANHHIEU --> VIENCHUC
     HOCHAM --> VIENCHUC
     XAPHUONG --> VIENCHUC
-
+```
 ### 3. Personnel Relationships
-
+```mermaid
 flowchart LR
     VIENCHUC --> CO_CHUCVU
     CHUCVU --> CO_CHUCVU
@@ -56,9 +57,9 @@ flowchart LR
     VIENCHUC --> CO_HESOLUONG
     BACLUONG --> CO_HESOLUONG
     NHOMNGACH --> CO_HESOLUONG
-
+```
 ### 4. Reporting Layer
-
+```mermaid
 flowchart LR
     VIENCHUC --> VW_LAY_DS_VIENCHUC
     VIENCHUC --> VW_DS_CONGTAC
@@ -68,9 +69,9 @@ flowchart LR
 
     DUOC_KHENTHUONG --> VW_KHENTHUONG
     BI_KYLUAT --> VW_KYLUAT
-
+```
 ### 5. Procedures Layers
-
+```mermaid
 flowchart LR
     SP_THEM_VIENCHUC --> VIENCHUC
     SP_CAPNHAT_VIENCHUC --> VIENCHUC
@@ -79,7 +80,7 @@ flowchart LR
     SP_CAPNHAT_CO_CHUCVU --> CO_CHUCVU
     SP_CAPNHAT_CO_HESOLUONG --> CO_HESOLUONG
     SP_CAPNHAT_TUYENDUNG --> TUYENDUNG
-
+```
 ## What Depends On What
 
 `VIENCHUC` is the central table. Most relationship tables point to it with foreign keys, and the reporting views read from it directly or through those relationship tables.
