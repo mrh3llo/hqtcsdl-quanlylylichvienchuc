@@ -5,14 +5,14 @@ FOR EACH ROW
 BEGIN
     DECLARE v_count INT DEFAULT 0;
 
-    -- End date must be after start date
+    -- * End date > start date
     IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
        AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU must be >= THOIGIANGIUCHUCVU';
+        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU >= THOIGIANGIUCHUCVU';
     END IF;
 
-    -- Only one active position allowed
+    -- * Only one active position allowed
     IF NEW.THOIGIANKETTHUCCHUCVU IS NULL THEN
 
         SELECT COUNT(*)
@@ -23,12 +23,12 @@ BEGIN
 
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Employee already has an active position';
+            SET MESSAGE_TEXT = 'Vien chuc hien tai da co chuc vu';
         END IF;
 
     END IF;
 
-    -- No overlapping periods
+    -- * No overlapping periods
     SELECT COUNT(*)
     INTO v_count
     FROM CO_CHUCVU
@@ -43,7 +43,7 @@ BEGIN
 
     IF v_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Position period overlaps another position';
+        SET MESSAGE_TEXT = 'thoi gian giu chuc vu trung lap';
     END IF;
 
 END$$
@@ -56,14 +56,14 @@ FOR EACH ROW
 BEGIN
     DECLARE v_count INT DEFAULT 0;
 
-    -- End date must be after start date
+    -- * End date > start date
     IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
        AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU must be >= THOIGIANGIUCHUCVU';
+        SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU >= THOIGIANGIUCHUCVU';
     END IF;
 
-    -- Only one active position allowed
+    -- * chi 1 chuc vu 1 lan
     IF NEW.THOIGIANKETTHUCCHUCVU IS NULL THEN
 
         SELECT COUNT(*)
@@ -80,12 +80,12 @@ BEGIN
 
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Employee already has an active position';
+            SET MESSAGE_TEXT = 'Vien chuc da co chuc vu';
         END IF;
 
     END IF;
 
-    -- No overlapping periods
+    -- * No overlapping periods
     SELECT COUNT(*)
     INTO v_count
     FROM CO_CHUCVU
@@ -106,7 +106,7 @@ BEGIN
 
     IF v_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Position period overlaps another position';
+        SET MESSAGE_TEXT = 'Chuc vu bi trung lap';
     END IF;
 
 END$$

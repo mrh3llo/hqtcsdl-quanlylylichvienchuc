@@ -60,6 +60,6 @@ $pageTitle = "404 - Page Not Found";
 </body>
 </html>
 <?php 
-// 3. Stop script execution immediately 
+// ! FUCKED
 exit(); 
 ?>

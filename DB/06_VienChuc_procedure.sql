@@ -95,7 +95,7 @@ DELIMITER ;
 
 
 
--- FULL Bộ trọn gói các bằng
+-- * FULL Bộ trọn gói các bằng
 DELIMITER $$
 
 CREATE DEFINER='root'@'%' PROCEDURE SP_VIENCHUC_BANG()
@@ -150,22 +150,18 @@ BEGIN
     FROM USERS
     WHERE MAVIENCHUC = SUBSTRING_INDEX(USER(),'@',1);
 
-    -- BASIC INFO
     SELECT *
     FROM VW_LAY_DS_VIENCHUC
     WHERE MAVIENCHUC = v_ma;
 
-    -- WORK
     SELECT *
     FROM VW_DS_CONGTAC
     WHERE MAVIENCHUC = v_ma;
 
-    -- REWARDS
     SELECT *
     FROM VW_KHENTHUONG
     WHERE MAVIENCHUC = v_ma;
 
-    -- DISCIPLINE
     SELECT *
     FROM VW_KYLUAT
     WHERE MAVIENCHUC = v_ma;

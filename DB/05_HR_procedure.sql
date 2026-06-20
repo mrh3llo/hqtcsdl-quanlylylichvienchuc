@@ -93,21 +93,21 @@ BEGIN
 
     SELECT ROLE INTO old_role FROM USERS WHERE MAVIENCHUC = p_mavienchuc;
 
-    --  old role
+    --  ? old role
     IF old_role = 'admin' THEN SET old_db_role = 'admin_role';
     ELSEIF old_role = 'hr' THEN SET old_db_role = 'hr_role';
     ELSEIF old_role = 'vienchuc' THEN SET old_db_role = 'vienchuc_role';
     ELSE SET old_db_role = 'thanhtra_role';
     END IF;
 
-    -- new role
+    -- ? new role
     IF p_role = 'admin' THEN SET new_db_role = 'admin_role';
     ELSEIF p_role = 'hr' THEN SET new_db_role = 'hr_role';
     ELSEIF p_role = 'vienchuc' THEN SET new_db_role = 'vienchuc_role';
     ELSE SET new_db_role = 'thanhtra_role';
     END IF;
 
-    -- update system
+    -- ? update system
     UPDATE USERS SET ROLE = p_role WHERE MAVIENCHUC = p_mavienchuc;
 
 
@@ -154,7 +154,7 @@ END$$
 
 DELIMITER ;
 
---          VIÊN CHỨC 
+--    *      VIÊN CHỨC 
 DELIMITER $$
 CREATE PROCEDURE SP_CAPNHAT_VIENCHUC (
     IN p_MAVIENCHUC CHAR(10), IN p_MADANHHIEU CHAR(5), IN p_MATONGIAO CHAR(5),
@@ -301,7 +301,7 @@ BEGIN
 END$$
 DELiMITER ;
 
---  COS Cấp luận chính trị
+-- ?  COS Cấp luận chính trị
 
 DELIMITER $$
 
@@ -326,7 +326,7 @@ END$$
 
 DELIMITER ;
 
---       COS Cấp quản lý nhà nước
+--   ?   COS Cấp quản lý nhà nước
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_CAPQUANLYNHANUOC (
@@ -338,7 +338,7 @@ BEGIN
     VALUES (p_MACAPQLNN, p_MAVIENCHUC)
     ON DUPLICATE KEY UPDATE MACAPQLNN = p_MACAPQLNN;
 END$$
--- DEL
+-- ! DEL
 CREATE PROCEDURE SP_XOA_CO_CAPQUANLYNHANUOC (
     IN p_MACAPQLNN CHAR(5),
     IN p_MAVIENCHUC CHAR(10)
@@ -350,7 +350,7 @@ END$$
 
 DELIMITER ;
 
---      Có Chức vụ
+--   ?   Có Chức vụ
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_CHUCVU (
@@ -368,7 +368,7 @@ BEGIN
         THOIGIANGIUCHUCVU = p_THOIGIANGIUCHUCVU,
         THOIGIANKETTHUCCHUCVU = p_THOIGIANKETTHUCCHUCVU;
 END$$
--- DEL
+-- ! DEL
 CREATE PROCEDURE SP_XOA_CO_CHUCVU (
     IN p_MAVIENCHUC CHAR(10),
     IN p_MACHUCVU CHAR(5),
@@ -386,7 +386,7 @@ END$$
 DELIMITER ;
 
 
---  co hệ số lương
+-- ? co hệ số lương
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_HESOLUONG (
@@ -400,7 +400,7 @@ BEGIN
     VALUES (p_MABACLUONG, p_MANHOMNGACH, p_MACHITIETLUONG, p_HESOLUONG)
     ON DUPLICATE KEY UPDATE HESOLUONG = p_HESOLUONG;
 END$$
--- DEL
+-- ! DEL
 CREATE PROCEDURE SP_XOA_CO_HESOLUONG (
     IN p_MABACLUONG CHAR(5),
     IN p_MANHOMNGACH CHAR(4),
@@ -416,7 +416,7 @@ END$$
 DELIMITER ;
 
 
---       CÓ Hộ khẩu thường trú
+--   ?    CÓ Hộ khẩu thường trú
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_HOKHAUTHUONGTRU (
@@ -429,7 +429,7 @@ BEGIN
     VALUES (p_MAVIENCHUC, p_MAXAPHUONG, p_THOIGIANDANGKYHOKHAU)
     ON DUPLICATE KEY UPDATE THOIGIANDANGKYHOKHAU = p_THOIGIANDANGKYHOKHAU;
 END$$
--- DEL
+-- ! DEL
 
 CREATE PROCEDURE SP_XOA_CO_HOKHAUTHUONGTRU (
     IN p_MAVIENCHUC CHAR(10),
@@ -442,7 +442,7 @@ END$$
 
 DELIMITER ;
 
--- cótạm trú
+--  ! cótạm trú
 
 DELIMITER $$
 
@@ -468,7 +468,7 @@ END$$
 
 DELIMITER ;
 
---  CÓ Tình trạng sức khỏe
+--  ? CÓ Tình trạng sức khỏe
 
 DELIMITER $$
 
@@ -499,7 +499,7 @@ END$$
 
 DELIMITER ;
 
--- Trình độc chuyên môn cao nhất
+--  ? Trình độc chuyên môn cao nhất
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_TRDCM_CAONHAT (
@@ -524,7 +524,7 @@ END$$
 DELIMITER ;
 
 
--- Có trình độ ngoại ngữ
+-- ? Có trình độ ngoại ngữ
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_TRD_NGOAINGU (
@@ -548,7 +548,7 @@ END$$
 
 DELIMITER ;
 
--- CÓ trình độ tin học
+-- ? CÓ trình độ tin học
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_CO_TRD_TINHOC (
@@ -572,7 +572,7 @@ END$$
 
 DELIMITER ;
 
--- thuộc quân đôi
+-- ? thuộc quân đôi
 
 DELIMITER $$
 
@@ -696,7 +696,7 @@ END$$
 DELIMITER ;
 
 
--- NHÓM NGẠCH
+-- ? NHÓM NGẠCH
 DELIMITER $$
 
 CREATE PROCEDURE SP_CAPNHAT_THUOC_NHOMNGACH (

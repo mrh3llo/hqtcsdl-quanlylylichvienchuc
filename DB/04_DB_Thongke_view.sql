@@ -1,6 +1,6 @@
--- this part is only for admin and thanh tra to view the statistic of employees
+-- ! this part is only for admin and thanh tra to view the statistic of employees
 
--- gender
+-- ? gender
 CREATE VIEW VW_THONGKE_GIOITINH AS
 SELECT
     GIOITINH,
@@ -9,7 +9,7 @@ FROM VIENCHUC
 GROUP BY GIOITINH;
 
 
--- enthiicity
+-- ? enthiicity
 CREATE VIEW VW_THONGKE_DANTOC AS
 SELECT
     dt.TENDANTOC,
@@ -18,7 +18,7 @@ FROM VIENCHUC vc
 JOIN DANTOC dt ON vc.MADANTOC = dt.MADANTOC
 GROUP BY dt.TENDANTOC;
 
--- religion
+-- ?  religion
 CREATE VIEW VW_THONGKE_TONGIAO AS
 SELECT
     tg.TENTONGIAO,
@@ -41,7 +41,7 @@ SELECT
 FROM VIENCHUC
 GROUP BY NHOMTUOI;
 
--- education information
+-- ? education information
 CREATE VIEW VW_THONGKE_TRINHDOHOCVAN AS
 SELECT
     td.TRINHDONGHIEPVUCHUYENNGANH,
@@ -61,7 +61,7 @@ JOIN CHUYENMON cm
 ON ct.MACHUYENMON = cm.MACHUYENMON
 GROUP BY cm.TENCHUYENMON;
 
--- foreign language information
+-- ? foreign language information
 CREATE VIEW VW_THONGKE_NGOAINGU AS
 SELECT
     nn.TENNGOAINGU,
@@ -81,7 +81,7 @@ JOIN CHUNGCHITINHOC th
 ON ct.MACHUNGCHITINHOC = th.MACHUNGCHITINHOC
 GROUP BY th.CHUNGCHITINHOC;
 
--- count how many employees in each department 
+-- ? count how many employees in each department 
 CREATE VIEW VW_THONGKE_COQUAN AS
 SELECT
     cq.TENCOQUAN,
@@ -91,7 +91,7 @@ JOIN COQUAN cq
 ON ccv.MACOQUAN = cq.MACOQUAN
 GROUP BY cq.TENCOQUAN;
 
--- count how many employees in each position
+-- ? count how many employees in each position
 CREATE VIEW VW_THONGKE_CHUCVU AS
 SELECT
     cv.TENCHUCVU,
@@ -101,7 +101,7 @@ JOIN CHUCVU cv
 ON ccv.MACHUCVU = cv.MACHUCVU
 GROUP BY cv.TENCHUCVU;
 
--- count how many employees in each profession
+-- ? count how many employees in each profession
 CREATE VIEW VW_THONGKE_NGHENGHIEP AS
 SELECT
     nn.TENNGHENGHIEP,
@@ -111,7 +111,7 @@ JOIN CHUCDANH_NGHENGHIEP nn
 ON ccv.MANGHENGHIEP = nn.MANGHENGHIEP
 GROUP BY nn.TENNGHENGHIEP;
 
--- count how many employees in each reward type
+-- ? count how many employees in each reward type
 CREATE VIEW VW_THONGKE_KHENTHUONG AS
 SELECT
     ht.TENHINHTHUCKHENTHUONG,
@@ -131,7 +131,7 @@ JOIN HINHTHUCKYLUAT kl
 ON bk.MAHINHTHUCKYLUAT = kl.MAHINHTHUCKYLUAT
 GROUP BY kl.TENHINHTHUCKYLUAT;
 
--- count how many employees get reward in EACH YEAR
+-- ? count how many employees get reward in EACH YEAR
 CREATE VIEW VW_THONGKE_KHENTHUONG_THEONAM AS
 SELECT
     YEAR(NAMNHANKHENTHUONG) AS NAM,
@@ -140,7 +140,7 @@ FROM DUOC_KHENTHUONG
 GROUP BY YEAR(NAMNHANKHENTHUONG);
 
 
--- count how many employees get discipline in EACH YEAR
+-- ? count how many employees get discipline in EACH YEAR
 CREATE VIEW VW_THONGKE_KYLUAT_THEONAM AS
 SELECT
     YEAR(NAMBIKYLUAT) AS NAM,
@@ -148,7 +148,7 @@ SELECT
 FROM BI_KYLUAT
 GROUP BY YEAR(NAMBIKYLUAT);
 
--- count how many employees get recruited in EACH YEAR
+--?  count how many employees get recruited in EACH YEAR
 CREATE VIEW VW_THONGKE_TUYENDUNG_THEONAM AS
 SELECT
     YEAR(NGAYTUYENDUNG) AS NAM,
@@ -157,7 +157,7 @@ FROM VIENCHUC
 GROUP BY YEAR(NGAYTUYENDUNG);
 
 
--- general overview dashboard
+-- ? general overview dashboard
 CREATE VIEW VW_DASHBOARD_TONGQUAN AS
 SELECT
     (SELECT COUNT(*) FROM VIENCHUC) AS TONGVIENCHUC,
@@ -176,7 +176,7 @@ SELECT
     (SELECT COUNT(DISTINCT MAVIENCHUC)
      FROM BI_KYLUAT) AS SO_NGUOI_BI_KYLUAT;
 
--- health (honestly... i don't know if i need thhis, cause if my old job said anything it's just no one care about employee healtht)
+-- ? health (honestly... i don't know if i need thhis, cause if my old job said anything it's just no one care about employee healtht)
 CREATE VIEW VW_THONGKE_TINHTRANGSUCKHOE AS
 SELECT
     sk.TINHTRANGSUCKHOE,
