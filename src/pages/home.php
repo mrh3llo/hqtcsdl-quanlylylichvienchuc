@@ -415,10 +415,10 @@ if (empty($avatar_path)) {
         <section class="section-box">
             <div class="section-header">
                 <h2>Thông tin viên chức hiện tại</h2>
-                <p>Tập kết quả đầu tiên từ thủ tục lưu trữ, thường là hồ sơ của tài khoản hiện tại.</p>
+                <p>Tập kết quả đầu tiên từ thủ tục lưu trữ</p>
             </div>
             <div class="section-body">
-                <?php echo render_table($basic_info, 'Không có dữ liệu hồ sơ viên chức.'); ?>
+                <?php echo render_table($basic_info, 'Không có dữ liệu hồ sơ viên chức'); ?>
             </div>
         </section>
     </div>

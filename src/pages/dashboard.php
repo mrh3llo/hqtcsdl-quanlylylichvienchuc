@@ -1,7 +1,18 @@
 <?php
+// 1. Khởi động Session ngay đầu file (Tránh lỗi Headers Already Sent)
+if (session_status() === PHP_SESSION_NONE) { 
+    session_start(); 
+}
+
+// Đọc thông báo từ trang xử lý form (nếu có) và xóa ngay để tránh lặp lại khi F5
+$actionMsg = $_SESSION['action_msg'] ?? '';
+$actionStatus = $_SESSION['action_status'] ?? false;
+unset($_SESSION['action_msg'], $_SESSION['action_status']);
+
+// 2. Nhập file kết nối cơ sở dữ liệu
 require_once __DIR__ . '/../include/db.inc.php';
 
-// 1. Khởi tạo section với giá trị mặc định
+// 3. Khởi tạo section với giá trị mặc định
 $section = isset($_GET['section']) && $_GET['section'] !== '' ? (string)$_GET['section'] : 'thong-tin-ca-nhan';
 
 function h(?string $s): string {
@@ -55,14 +66,13 @@ function call_sp_with_params(PDO $pdo, string $spName, array $params): array {
     $stmt = $pdo->prepare($sql);
     $stmt->execute(array_values($params));
 
-    // MySQL may return multiple result sets; this app expects first set for tables.
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     $stmt->closeCursor();
 
     return $rows;
 }
 
-// 2. Lấy và format lại role từ MySQL (cắt bỏ `@%` và dấu backtick)
+// Lấy và format lại role từ MySQL
 $roleRow = $pdo->query("SELECT current_role() AS current_role")->fetch(PDO::FETCH_ASSOC);
 $rawRole = $roleRow['current_role'] ?? '';
 $currentRole = str_replace('`', '', explode('@', $rawRole)[0]);
@@ -70,16 +80,14 @@ $currentRole = str_replace('`', '', explode('@', $rawRole)[0]);
 $loadError = '';
 $resultRows = [];
 
-// Các biến lưu trữ trạng thái cho màn hình HR SP
-// Các biến lưu trữ trạng thái cho màn hình HR SP
 $spList = [];
 $spParams = [];
 $selectedSp = '';
 
-// Thêm các biến cho màn hình Tất cả View
 $viewList = [];
 $selectedDbView = '';
 
+// Hệ thống cấu trúc định tuyến (Routes)
 $routes = [
     'thong-tin-ca-nhan' => [
         'canhan-thongtin' => function() use ($pdo) { return call_sp($pdo, 'SP_CANHAN_THONGTIN'); },
@@ -87,11 +95,10 @@ $routes = [
     'hr-procedure' => [
         'them-vien-chuc' => function() use ($currentRole, &$loadError) {
             if (!in_array($currentRole, ['hr_role', 'admin_role'], true)) {
-                $loadError = 'không có quyền truy cập.';
+                $loadError = 'Bạn không có quyền truy cập chức năng này.';
             }
             return [];
         },
-        'vienchuc-dashboard' => function() use ($pdo) { return call_sp($pdo, 'SP_VIENCHUC_DASHBOARD'); },
         'vienchuc-dashboard' => function() use ($pdo) { return call_sp($pdo, 'SP_VIENCHUC_DASHBOARD'); },
         'vienchuc-lichsu-congtac' => function() use ($pdo) {
             $stmt = $pdo->query("CALL SP_VIENCHUC_LICHSU_CONGTAC()");
@@ -108,10 +115,8 @@ $routes = [
                 return [];
             }
 
-            // Lấy tên database hiện tại để filter procedures
             $dbName = $pdo->query('SELECT DATABASE()')->fetchColumn();
 
-            // 1. Lấy danh sách toàn bộ thủ tục bắt đầu bằng SP_
             $stmt = $pdo->prepare("
                 SELECT ROUTINE_NAME 
                 FROM INFORMATION_SCHEMA.ROUTINES 
@@ -123,19 +128,17 @@ $routes = [
             $stmt->execute([$dbName]);
             $spList = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
 
-            // 2. Xác định SP đang được chọn
             $selectedSp = $_GET['sp_name'] ?? $_POST['sp_name'] ?? '';
             if ($selectedSp && !in_array($selectedSp, $spList, true)) {
-                $selectedSp = ''; // Reset nếu SP không hợp lệ
+                $selectedSp = '';
             }
 
-            // 3. Load parameters nếu có SP được chọn
             if ($selectedSp) {
                 $stmt = $pdo->prepare("
                     SELECT PARAMETER_NAME, DATA_TYPE 
                     FROM INFORMATION_SCHEMA.PARAMETERS 
                     WHERE SPECIFIC_NAME = ? 
-                    AND SPECIFIC_SCHEMA = ?  /* Đã sửa ROUTINE_SCHEMA thành SPECIFIC_SCHEMA ở đây */
+                    AND SPECIFIC_SCHEMA = ?
                     AND PARAMETER_MODE = 'IN' 
                     ORDER BY ORDINAL_POSITION
                 ");
@@ -143,7 +146,6 @@ $routes = [
                 $spParams = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
             }
 
-            // 4. Xử lý khi Submit Form
             if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && $selectedSp) {
                 try {
                     $execParams = [];
@@ -185,7 +187,6 @@ $routes = [
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         },
         'tat-ca-view' => function() use ($pdo, $currentRole, &$loadError, &$resultRows, &$viewList, &$selectedDbView) {
-            // Giới hạn quyền cho admin/hr (tuỳ chỉnh theo ý bạn)
             if (!in_array($currentRole, ['hr_role', 'admin_role'], true)) {
                 $loadError = 'Bạn không có quyền xem danh sách View.';
                 return [];
@@ -193,7 +194,6 @@ $routes = [
 
             $dbName = $pdo->query('SELECT DATABASE()')->fetchColumn();
 
-            // 1. Lấy danh sách tất cả các View trong database
             $stmt = $pdo->prepare("
                 SELECT TABLE_NAME 
                 FROM INFORMATION_SCHEMA.VIEWS 
@@ -203,20 +203,16 @@ $routes = [
             $stmt->execute([$dbName]);
             $viewList = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
 
-            // 2. Xác định View đang được chọn
             $selectedDbView = $_GET['view_name'] ?? '';
             
-            // 3. Bảo mật: Validate chặt chẽ tên View để chống SQL Injection
             if ($selectedDbView && !in_array($selectedDbView, $viewList, true)) {
                 $selectedDbView = ''; 
                 $loadError = 'View không hợp lệ hoặc không tồn tại.';
             }
 
-            // 4. Load dữ liệu nếu có View hợp lệ
             if ($selectedDbView) {
                 try {
-                    // Do đã validate bằng in_array ở trên, việc nối chuỗi an toàn tuyệt đối
-                    $stmt = $pdo->query("SELECT * FROM `" . $selectedDbView . "` LIMIT 1000"); // Nên có LIMIT để tránh treo máy nếu View quá lớn
+                    $stmt = $pdo->query("SELECT * FROM `" . $selectedDbView . "` LIMIT 1000");
                     $resultRows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                     return $resultRows;
                 } catch (Throwable $e) {
@@ -230,7 +226,7 @@ $routes = [
     ],
 ];
 
-// 3. Khởi tạo view mặc định an toàn sau khi $routes đã được định nghĩa
+// Khởi tạo view mặc định an toàn
 if (empty($_GET['view']) && isset($routes[$section])) {
     $view = array_key_first($routes[$section]); 
 } else {
@@ -250,6 +246,7 @@ if (!isset($allowedItems[$view])) {
     }
 }
 
+// Cấu trúc phân quyền Menu hiển thị
 $menu = [
     'thong-tin-ca-nhan' => [
         'label' => 'Thông tin cá nhân',
@@ -260,6 +257,7 @@ $menu = [
     'hr-procedure' => [
         'label' => 'HR procedure',
         'items' => [
+            ['key' => 'them-vien-chuc', 'label' => 'Thêm mới viên chức', 'roles' => ['hr_role', 'admin_role']],
             ['key' => 'vienchuc-dashboard', 'label' => 'Tổng quan viên chức', 'roles' => ['vienchuc_role', 'hr_role', 'admin_role']],
             ['key' => 'vienchuc-lichsu-congtac', 'label' => 'Lịch sử công tác', 'roles' => ['vienchuc_role']],
             ['key' => 'vienchuc-khenthuong', 'label' => 'Khen thưởng', 'roles' => ['vienchuc_role']],
@@ -310,7 +308,6 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
     <?php
     return (string)ob_get_clean();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -318,7 +315,7 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - truy cập theo role</title>
+    <title>Dashboard - Truy cập theo role</title>
     <style>
         :root {
             --bg: #f4f4f9;
@@ -423,6 +420,11 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
             color: #664d03;
             border: 1px solid #ffecb5;
         }
+        .message.success {
+            background: #d1e7dd;
+            color: #0f5132;
+            border-color: #badbcc;
+        }
         .empty-msg {
             padding: 14px;
             border: 1px dashed var(--line);
@@ -471,6 +473,12 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
     <main class="content">
         <h2><?php echo $loadError ? 'Lỗi' : h(ucwords(str_replace('-', ' ', $view))); ?></h2>
         
+        <?php if (!empty($actionMsg)): ?>
+            <div class="message<?php echo $actionStatus ? ' success' : ''; ?>">
+                <?php echo h($actionMsg); ?>
+            </div>
+        <?php endif; ?>
+
         <?php if ($loadError): ?>
             <div class="message">Không thể tải dữ liệu: <?php echo h($loadError); ?></div>
         <?php endif; ?>
@@ -526,7 +534,7 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
                         <div style="display: flex; gap: 12px; align-items: center;">
                             <button class="action-link primary" type="submit" style="cursor: pointer; padding: 12px 20px;">Thực thi Procedure</button>
                             <span style="color: var(--muted); font-size: 0.9rem;">
-                                ⚠️ Cẩn trọng: Thao tác có thể ảnh hưởng trực tiếp đến dữ liệu.
+                                If this broke, i'm going to hang myself
                             </span>
                         </div>
                     </form>
@@ -539,12 +547,15 @@ function render_sidebar(array $menu, string $currentRole, string $section, strin
                             echo render_table($resultRows, 'Không có dữ liệu.');
                         } else {
                             echo '<div class="empty-msg" style="margin-top: 20px; background: #d1e7dd; color: #0f5132; border-color: #badbcc;">
-                                    ✅ Procedure đã được thực thi thành công. (Không có bảng dữ liệu trả về).
+                                    SP  thực thi thành công. (Không có bảng dữ liệu trả về).
                                   </div>';
                         }
                     }
                 ?>
             </div>
+
+        <?php elseif ($section === 'hr-procedure' && $view === 'them-vien-chuc'): ?>
+    <?php if (!$loadError) require_once __DIR__ . '/them-vienchuc.php'; ?>
 
         <?php elseif ($view === 'tat-ca-view'): ?>
             <div class="view-container">
