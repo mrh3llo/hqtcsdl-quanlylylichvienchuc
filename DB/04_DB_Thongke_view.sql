@@ -1,6 +1,6 @@
 -- ! this part is only for admin and thanh tra to view the statistic of employees
 
--- ? gender
+--   ? gender
 CREATE VIEW VW_THONGKE_GIOITINH AS
 SELECT
     GIOITINH,
@@ -81,7 +81,7 @@ JOIN CHUNGCHITINHOC th
 ON ct.MACHUNGCHITINHOC = th.MACHUNGCHITINHOC
 GROUP BY th.CHUNGCHITINHOC;
 
--- ? count how many employees in each department 
+--    ? count how many employees in each department 
 CREATE VIEW VW_THONGKE_COQUAN AS
 SELECT
     cq.TENCOQUAN,
@@ -131,7 +131,7 @@ JOIN HINHTHUCKYLUAT kl
 ON bk.MAHINHTHUCKYLUAT = kl.MAHINHTHUCKYLUAT
 GROUP BY kl.TENHINHTHUCKYLUAT;
 
--- ? count how many employees get reward in EACH YEAR
+--   ? count how many employees get reward in EACH YEAR
 CREATE VIEW VW_THONGKE_KHENTHUONG_THEONAM AS
 SELECT
     YEAR(NAMNHANKHENTHUONG) AS NAM,
@@ -140,7 +140,7 @@ FROM DUOC_KHENTHUONG
 GROUP BY YEAR(NAMNHANKHENTHUONG);
 
 
--- ? count how many employees get discipline in EACH YEAR
+--  ? count how many employees get discipline in EACH YEAR
 CREATE VIEW VW_THONGKE_KYLUAT_THEONAM AS
 SELECT
     YEAR(NAMBIKYLUAT) AS NAM,
@@ -148,7 +148,7 @@ SELECT
 FROM BI_KYLUAT
 GROUP BY YEAR(NAMBIKYLUAT);
 
---?  count how many employees get recruited in EACH YEAR
+--   ?  count how many employees get recruited in EACH YEAR
 CREATE VIEW VW_THONGKE_TUYENDUNG_THEONAM AS
 SELECT
     YEAR(NGAYTUYENDUNG) AS NAM,
