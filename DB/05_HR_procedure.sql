@@ -723,3 +723,64 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+--             !               SIEU QUAN TRONG THONG KE SIEU DANH SACH
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_DASHBOARD_CHITIET_NHANSU(
+    IN p_TinhTrangSucKhoe VARCHAR(20),  -- Matches TINHTRANGSUCKHOE.TINHTRANGSUCKHOE
+    IN p_NhomTuoi VARCHAR(20),          -- 'Duoi 30', '30-39', '40-49', '50-59', '60+'
+    IN p_TenCoQuan VARCHAR(30),         -- Matches COQUAN.TENCOQUAN
+    IN p_TenChucVu CHAR(30),           -- Matches CHUCVU.TENCHUCVU
+    IN p_GioiTinh VARCHAR(3),           -- Matches VIENCHUC.GIOITINH ('Nam' / 'Nu')
+    IN p_NamKhenThuong INT,             -- Year of reward
+    IN p_NamKyLuat INT                  -- Year of discipline
+)
+BEGIN
+    SELECT DISTINCT
+        vc.MAVIENCHUC,
+        CONCAT(vc.HO, ' ', vc.TENLOT, ' ', vc.TEN) AS HOTEN,
+        vc.GIOITINH,
+        vc.NGAYSINH,
+        TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) AS TUOI,
+        sk.TINHTRANGSUCKHOE,
+        cq.TENCOQUAN,
+        cv.TENCHUCVU
+    FROM VIENCHUC vc
+
+    LEFT JOIN CO_TINHTRANGSK ctsk ON vc.MAVIENCHUC = ctsk.MAVIENCHUC
+    LEFT JOIN TINHTRANGSUCKHOE sk ON ctsk.MASUCKHOE = sk.MASUCKHOE
+    
+    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+    
+    LEFT JOIN DUOC_KHENTHUONG dk ON vc.MAVIENCHUC = dk.MAVIENCHUC
+    LEFT JOIN BI_KYLUAT bk ON vc.MAVIENCHUC = bk.MAVIENCHUC
+    
+    WHERE 
+        (p_TinhTrangSucKhoe IS NULL OR sk.TINHTRANGSUCKHOE = p_TinhTrangSucKhoe)
+        
+        AND (p_GioiTinh IS NULL OR vc.GIOITINH = p_GioiTinh)
+        
+        AND (p_TenCoQuan IS NULL OR cq.TENCOQUAN = p_TenCoQuan)
+        
+        AND (p_TenChucVu IS NULL OR cv.TENCHUCVU = p_TenChucVu)
+        
+        AND (p_NamKhenThuong IS NULL OR YEAR(dk.NAMNHANKHENTHUONG) = p_NamKhenThuong)
+        
+        AND (p_NamKyLuat IS NULL OR YEAR(bk.NAMBIKYLUAT) = p_NamKyLuat)
+        
+        AND (
+            p_NhomTuoi IS NULL OR
+            (p_NhomTuoi = 'Duoi 30' AND TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) < 30) OR
+            (p_NhomTuoi = '30-39' AND TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 30 AND 39) OR
+            (p_NhomTuoi = '40-49' AND TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 40 AND 49) OR
+            (p_NhomTuoi = '50-59' AND TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 50 AND 59) OR
+            (p_NhomTuoi = '60+' AND TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) >= 60)
+        );
+END //
+
+DELIMITER ;

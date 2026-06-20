@@ -101,6 +101,18 @@ $male_staff = $stats['NAM'] ?? 0;
 $female_staff = $stats['NU'] ?? 0;
 $rewarded_staff = $stats['SO_NGUOI_DUOC_KHENTHUONG'] ?? 0;
 $disciplined_staff = $stats['SO_NGUOI_BI_KYLUAT'] ?? 0;
+
+// Extract profile layout details from the single user record
+$user_profile = !empty($basic_info) ? $basic_info[0] : null;
+$avatar_path = $user_profile['ANHDAIDIEN'] ?? '';
+
+// Fallback logic for default placeholder image if database entry is blank or missing
+if (empty($avatar_path)) {
+    $avatar_src = 'https://via.placeholder.com/150?text=No+Image';
+} else {
+    // Modify '/uploads/avatars/' if your project images are stored under a different directory structure
+    $avatar_src = '/uploads/avatars/' . htmlspecialchars($avatar_path, ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <!DOCTYPE html>
@@ -149,14 +161,30 @@ $disciplined_staff = $stats['SO_NGUOI_BI_KYLUAT'] ?? 0;
         .hero-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
+            align-items: center;
+            gap: 24px;
             flex-wrap: wrap;
+        }
+
+        .profile-summary-block {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-avatar-container img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            background-color: #f0f0f0;
         }
 
         .hero h1 {
             margin: 0 0 8px;
-            font-size: 2rem;
+            font-size: 1.8rem;
             line-height: 1.1;
         }
 
@@ -317,11 +345,13 @@ $disciplined_staff = $stats['SO_NGUOI_BI_KYLUAT'] ?? 0;
 
         @media (max-width: 900px) {
             .grid-two { grid-template-columns: 1fr; }
-            .hero h1 { font-size: 1.7rem; }
+            .hero h1 { font-size: 1.5rem; }
         }
 
         @media (max-width: 640px) {
             body { padding: 16px 12px 28px; }
+            .hero-top { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .profile-summary-block { flex-direction: column; align-items: flex-start; gap: 12px; }
             .hero, .section-header, .section-body { padding-left: 16px; padding-right: 16px; }
             .hero { padding: 18px; }
             .stats-grid { grid-template-columns: 1fr; }
@@ -332,12 +362,26 @@ $disciplined_staff = $stats['SO_NGUOI_BI_KYLUAT'] ?? 0;
 <div class="dashboard-container">
     <div class="hero">
         <div class="hero-top">
-            <div>
-                <h1>Bảng điều khiển CSDL</h1>
-                <p>Tổng quan cơ sở dữ liệu viên chức, với khả năng truy cập nhanh đến tổng số viên chức, phân bố tình trạng sức khỏe và thông tin hồ sơ hiện tại của bạn.</p>
+            <div class="profile-summary-block">
+                <div class="profile-avatar-container">
+                    <img src="<?php echo $avatar_src; ?>" alt="Ảnh đại diện">
+                </div>
+                <div>
+                    <h1>
+                        <?php 
+                        if ($user_profile && isset($user_profile['HOTEN'])) {
+                            echo "Xin chào, " . htmlspecialchars($user_profile['HOTEN'], ENT_QUOTES, 'UTF-8');
+                        } else {
+                            echo "Bảng điều khiển CSDL";
+                        }
+                        ?>
+                    </h1>
+                    <p>Tổng quan cơ sở dữ liệu viên chức, với khả năng truy cập nhanh đến hồ sơ nhân sự, lịch sử điều động công tác và thông tin khen thưởng kỷ luật hiện tại của bạn.</p>
+                </div>
             </div>
             <div class="hero-actions">
-                <a class="action-link primary" href="/">Làm mới bảng điều khiển</a>
+                <a class="action-link primary" href="/dashboard">Mở menu theo role</a>
+                <a class="action-link" href="/">Làm mới bảng điều khiển</a>
                 <a class="action-link" href="/include/logout.php">Đăng xuất</a>
             </div>
         </div>
