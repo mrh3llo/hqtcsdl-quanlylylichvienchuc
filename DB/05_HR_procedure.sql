@@ -784,3 +784,105 @@ BEGIN
 END //
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE SP_LAY_DANH_SACH_THEO_CHI_SO(
+    IN p_Category VARCHAR(50),  -- e.g., 'suckhoe', 'dotuoi', 'khenthuong', 'kyluat', 'gioitinh'
+    IN p_Value VARCHAR(100)     -- e.g., 'Yeu', '30-39', 'Nu' (Optional: leave NULL or '' to see all)
+)
+BEGIN
+    SET @sql = 'SELECT vc.MAVIENCHUC, 
+                       CONCAT(vc.HO, '' '', vc.TENLOT, '' '', vc.TEN) AS HOTEN, 
+                       vc.GIOITINH, 
+                       vc.NGAYSINH,
+                       cq.TENCOQUAN,
+                       cv.TENCHUCVU ';
+
+    -- 1. HEALTH FILTER (suckhoe)
+    IF p_Category = 'suckhoe' THEN
+        SET @sql = CONCAT(@sql, ', sk.TINHTRANGSUCKHOE AS TIEUCHI 
+                    FROM VIENCHUC vc
+                    JOIN CO_TINHTRANGSK ctsk ON vc.MAVIENCHUC = ctsk.MAVIENCHUC
+                    JOIN TINHTRANGSUCKHOE sk ON ctsk.MASUCKHOE = sk.MASUCKHOE
+                    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+                    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+                    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+                    WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND sk.TINHTRANGSUCKHOE LIKE ''%', p_Value, '%'' ');
+        END IF;
+
+    -- 2. AGE GROUP FILTER (dotuoi)
+    ELSEIF p_Category = 'dotuoi' THEN
+        SET @sql = CONCAT(@sql, ', CASE
+                        WHEN TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) < 30 THEN ''Duoi 30''
+                        WHEN TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 30 AND 39 THEN ''30-39''
+                        WHEN TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 40 AND 49 THEN ''40-49''
+                        WHEN TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) BETWEEN 50 AND 59 THEN ''50-59''
+                        ELSE ''60+''
+                    END AS TIEUCHI 
+                    FROM VIENCHUC vc
+                    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+                    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+                    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+                    WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' HAVING TIEUCHI = ''', p_Value, ''' ');
+        END IF;
+
+    -- 3. REWARD FILTER (khenthuong)
+    ELSEIF p_Category = 'khenthuong' THEN
+        SET @sql = CONCAT(@sql, ', htkt.TENHINHTHUCKHENTHUONG AS TIEUCHI, YEAR(dkt.NAMNHANKHENTHUONG) AS NAM 
+                    FROM VIENCHUC vc
+                    JOIN DUOC_KHENTHUONG dkt ON vc.MAVIENCHUC = dkt.MAVIENCHUC
+                    JOIN HINHTHUCKHENTHUONG htkt ON dkt.MAHINHTHUCKHENTHUONG = htkt.MAHINHTHUCKHENTHUONG
+                    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+                    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+                    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+                    WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND (htkt.TENHINHTHUCKHENTHUONG LIKE ''%', p_Value, '%'' OR YEAR(dkt.NAMNHANKHENTHUONG) = ''', p_Value, ''') ');
+        END IF;
+
+    -- 4. DISCIPLINE FILTER (kyluat)
+    ELSEIF p_Category = 'kyluat' THEN
+        SET @sql = CONCAT(@sql, ', htkl.TENHINHTHUCKYLUAT AS TIEUCHI, YEAR(bkl.NAMBIKYLUAT) AS NAM 
+                    FROM VIENCHUC vc
+                    JOIN BI_KYLUAT bkl ON vc.MAVIENCHUC = bkl.MAVIENCHUC
+                    JOIN HINHTHUCKYLUAT htkl ON bkl.MAHINHTHUCKYLUAT = htkl.MAHINHTHUCKYLUAT
+                    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+                    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+                    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+                    WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND (htkl.TENHINHTHUCKYLUAT LIKE ''%', p_Value, '%'' OR YEAR(bkl.NAMBIKYLUAT) = ''', p_Value, ''') ');
+        END IF;
+
+    -- 5. GENDER FILTER (gioitinh)
+    ELSEIF p_Category = 'gioitinh' THEN
+        SET @sql = CONCAT(@sql, ', vc.GIOITINH AS TIEUCHI 
+                    FROM VIENCHUC vc
+                    LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+                    LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+                    LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+                    WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND vc.GIOITINH = ''', p_Value, ''' ');
+        END IF;
+
+    -- FALLBACK: If category doesn't match
+    ELSE
+        SELECT 'Invalid Category. Choose from: suckhoe, dotuoi, khenthuong, kyluat, gioitinh' AS ErrorMessage;
+        SET @sql = NULL;
+    END IF;
+
+    -- Execute the dynamically built query safely
+    IF @sql IS NOT NULL THEN
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END$$
+
+DELIMITER ;

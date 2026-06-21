@@ -49,13 +49,13 @@ while ($attempt < $maxAttempts) {
         break; 
         
     } catch (Throwable $e) {
-        echo "Attempt #$attempt failed (MySQL might still be initializing...). Retrying in 3 seconds...\n";
+        echo "Attempt #$attempt failed (MySQL might still be initializing...). Retrying in 5 seconds...\n";
         
         if ($attempt >= $maxAttempts) {
             die("CRITICAL CONNECTION ERROR: Failed to connect after $maxAttempts attempts. " . $e->getMessage() . "\n");
         }
         
-        sleep(3);
+        sleep(5);
     }
 }
 
