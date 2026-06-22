@@ -4,15 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start(); 
 }
 
-// Đọc thông báo từ trang xử lý form (nếu có) và xóa ngay để tránh lặp lại khi F5
 $actionMsg = $_SESSION['action_msg'] ?? '';
 $actionStatus = $_SESSION['action_status'] ?? false;
 unset($_SESSION['action_msg'], $_SESSION['action_status']);
 
-// 2. Nhập file kết nối cơ sở dữ liệu
 require_once __DIR__ . '/../include/db.inc.php';
 
-// 3. Khởi tạo section với giá trị mặc định
 $section = isset($_GET['section']) && $_GET['section'] !== '' ? (string)$_GET['section'] : 'thong-tin-ca-nhan';
 
 function h(?string $s): string {

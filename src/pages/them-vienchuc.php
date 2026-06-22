@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_them_vienchuc']))
             }
         }
 
-        // Gom dữ liệu vào một mảng theo đúng thứ tự của SP
         $params = [
             $_POST['ma_vienchuc'] ?? null, $_POST['ma_danhhieu'] ?? null, $_POST['ma_tongiao'] ?? null,
             $_POST['ma_hocham'] ?? null, $_POST['ma_trinhdo'] ?? null, $_POST['ma_dantoc'] ?? null,

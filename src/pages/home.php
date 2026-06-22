@@ -102,15 +102,12 @@ $female_staff = $stats['NU'] ?? 0;
 $rewarded_staff = $stats['SO_NGUOI_DUOC_KHENTHUONG'] ?? 0;
 $disciplined_staff = $stats['SO_NGUOI_BI_KYLUAT'] ?? 0;
 
-// Extract profile layout details from the single user record
 $user_profile = !empty($basic_info) ? $basic_info[0] : null;
 $avatar_path = $user_profile['ANHDAIDIEN'] ?? '';
 
-// Fallback logic for default placeholder image if database entry is blank or missing
 if (empty($avatar_path)) {
-    $avatar_src = 'https://via.placeholder.com/150?text=No+Image';
+    $avatar_src = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 } else {
-    // Modify '/uploads/avatars/' if your project images are stored under a different directory structure
     $avatar_src = '/uploads/avatars/' . htmlspecialchars($avatar_path, ENT_QUOTES, 'UTF-8');
 }
 ?>
