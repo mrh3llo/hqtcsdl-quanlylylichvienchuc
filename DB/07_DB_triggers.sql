@@ -360,7 +360,7 @@ BEGIN
 
     IF ngay_het_han IS NOT NULL
        AND CURDATE() > ngay_het_han THEN
-        SIGNAL SQLSTATE '45000'
+        SIGNAL SQLSTATE '01000'
         SET MESSAGE_TEXT = 'CCCD da het han theo quy dinh doi the';
     END IF;
 
