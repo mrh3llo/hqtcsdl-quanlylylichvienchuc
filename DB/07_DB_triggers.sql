@@ -342,11 +342,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Ngay cap CCCD khong hop le';
     END IF;
 
-    IF NEW.NGAYCAPCCCD < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'CCCD da duoc cap qua 5 nam';
-    END IF;
-
     SET tuoi_cap_cccd =
         TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, NEW.NGAYCAPCCCD);
 
@@ -406,6 +401,8 @@ BEGIN
 
         WHEN v_hocvi = 'Tiến sĩ' THEN
             SET v_tuoitoithieu = 27;
+        ELSE
+            SET v_tuoitoithieu =18;
     END CASE;
 
     IF v_tuoi < v_tuoitoithieu THEN
@@ -445,9 +442,10 @@ BEGIN
 
         WHEN v_hocvi = 'Thạc sĩ' THEN
             SET v_tuoitoithieu = 24;
-
         WHEN v_hocvi = 'Tiến sĩ' THEN
             SET v_tuoitoithieu = 27;
+        ELSE
+            SET v_tuoitoithieu = 18;
     END CASE;
 
     IF v_tuoi < v_tuoitoithieu THEN
@@ -457,7 +455,7 @@ BEGIN
 
 END$$
 
-DELIMITER ;s
+DELIMITER ;
 
 
 --   !  TRIGGER FOR LOG
