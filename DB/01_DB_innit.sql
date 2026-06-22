@@ -386,8 +386,8 @@ CREATE TABLE VIENCHUC (
    MATRINHDO            CHAR(5)              NOT NULL,
    MADANTOC             CHAR(5)              NOT NULL,
    MAHANGTHUONGBINH     CHAR(5)              NULL,
-   MAXAPHUONG           CHAR(5)              NOT NULL,
-   XAP_MAXAPHUONG       CHAR(5)              NOT NULL,
+   MAXAPHUONG           CHAR(5)              NOT NULL, -- Viên chức có quê quán (FK_VIENCHUC_CO_QUEQUA_XAPHUONG)
+   XAP_MAXAPHUONG       CHAR(5)              NOT NULL, -- Viên chức có nơi sinh (FK_VIENCHUC_CO_NOISIN_XAPHUONG)
    HO                   VARCHAR(20)          NULL,
    TENLOT               VARCHAR(40)          NULL,
    TEN                  VARCHAR(20)          NOT NULL,

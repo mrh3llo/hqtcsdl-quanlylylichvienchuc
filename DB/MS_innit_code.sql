@@ -814,8 +814,8 @@ create table VIENCHUC (
    MATRINHDO            char(5)              not null,
    MADANTOC             char(5)              not null,
    MAHANGTHUONGBINH     char(5)              null,
-   MAXAPHUONG           char(5)              not null,
-   XAP_MAXAPHUONG       char(5)              not null,
+   MAXAPHUONG           char(5)              not null, -- Viên chức có quê quán (FK_VIENCHUC_CO_QUEQUA_XAPHUONG)
+   XAP_MAXAPHUONG       char(5)              not null, -- Viên chức có nơi sinh (FK_VIENCHUC_CO_NOISIN_XAPHUONG)
    HO                   varchar(20)          null,
    TENLOT               varchar(40)          null,
    TEN                  varchar(20)          null,
