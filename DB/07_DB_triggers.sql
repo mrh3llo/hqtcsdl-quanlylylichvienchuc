@@ -346,13 +346,13 @@ BEGIN
         TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, NEW.NGAYCAPCCCD);
 
     IF tuoi_cap_cccd < 25 THEN
-        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 25 YEAR);
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 26 YEAR);
 
     ELSEIF tuoi_cap_cccd < 40 THEN
-        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 40 YEAR);
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 41 YEAR);
 
     ELSEIF tuoi_cap_cccd < 60 THEN
-        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 60 YEAR);
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 61 YEAR);
 
     ELSE
         SET ngay_het_han = NULL;
