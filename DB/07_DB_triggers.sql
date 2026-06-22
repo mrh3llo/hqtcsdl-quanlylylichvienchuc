@@ -320,6 +320,10 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Vien chuc phai du 18 tuoi';
     END IF;
+    IF TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, NEW.NGAYTUYENDUNG) >= 80 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Vien chuc phai nho hon 80 tuoi';
+    END IF;
 
 END$$
 
