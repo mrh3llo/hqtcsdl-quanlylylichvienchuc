@@ -208,11 +208,25 @@ BEGIN
     END;
 
     START TRANSACTION;
+    DELETE FROM DUOC_KHENTHUONG WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM BI_KYLUAT WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_CAPLYLUANCHINHTRI WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_CAPQUANLYNHANUOC WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_CHUCVU WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_HOKHAUTHUONGTRU WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_TAMTRU WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_TINHTRANGSK WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_TRDCM_CAONHAT WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_TRD_NGOAINGU WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM CO_TRD_TINHOC WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM THUOC_QUANDOI WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM THUOC_TOCHUCDOANTHECHINHTRIXAHOI WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM TUYENDUNG WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM THUOC_NHOM_NGACH WHERE MAVIENCHUC = p_MAVIENCHUC;
 
     CALL SP_XOA_USERS(p_MAVIENCHUC);
 
-    DELETE FROM VIENCHUC
-    WHERE MAVIENCHUC = p_MAVIENCHUC;
+    DELETE FROM VIENCHUC WHERE MAVIENCHUC = p_MAVIENCHUC;
 
     COMMIT;
 END$$
@@ -788,8 +802,8 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE PROCEDURE SP_LAY_DANH_SACH_THEO_CHI_SO(
-    IN p_Category VARCHAR(50),  -- e.g., 'suckhoe', 'dotuoi', 'khenthuong', 'kyluat', 'gioitinh'
-    IN p_Value VARCHAR(100)     -- e.g., 'Yeu', '30-39', 'Nu' (Optional: leave NULL or '' to see all)
+    IN p_Category VARCHAR(50),
+    IN p_Value VARCHAR(100)
 )
 BEGIN
     SET @sql = 'SELECT vc.MAVIENCHUC, 
@@ -799,7 +813,7 @@ BEGIN
                        cq.TENCOQUAN,
                        cv.TENCHUCVU ';
 
-    -- 1. HEALTH FILTER (suckhoe)
+    -- All conditions must be inside one IF...ELSEIF...ELSE chain
     IF p_Category = 'suckhoe' THEN
         SET @sql = CONCAT(@sql, ', sk.TINHTRANGSUCKHOE AS TIEUCHI 
                     FROM VIENCHUC vc
@@ -813,7 +827,6 @@ BEGIN
             SET @sql = CONCAT(@sql, ' AND sk.TINHTRANGSUCKHOE LIKE ''%', p_Value, '%'' ');
         END IF;
 
-    -- 2. AGE GROUP FILTER (dotuoi)
     ELSEIF p_Category = 'dotuoi' THEN
         SET @sql = CONCAT(@sql, ', CASE
                         WHEN TIMESTAMPDIFF(YEAR, vc.NGAYSINH, CURDATE()) < 30 THEN ''Duoi 30''
@@ -831,7 +844,6 @@ BEGIN
             SET @sql = CONCAT(@sql, ' HAVING TIEUCHI = ''', p_Value, ''' ');
         END IF;
 
-    -- 3. REWARD FILTER (khenthuong)
     ELSEIF p_Category = 'khenthuong' THEN
         SET @sql = CONCAT(@sql, ', htkt.TENHINHTHUCKHENTHUONG AS TIEUCHI, YEAR(dkt.NAMNHANKHENTHUONG) AS NAM 
                     FROM VIENCHUC vc
@@ -845,7 +857,6 @@ BEGIN
             SET @sql = CONCAT(@sql, ' AND (htkt.TENHINHTHUCKHENTHUONG LIKE ''%', p_Value, '%'' OR YEAR(dkt.NAMNHANKHENTHUONG) = ''', p_Value, ''') ');
         END IF;
 
-    -- 4. DISCIPLINE FILTER (kyluat)
     ELSEIF p_Category = 'kyluat' THEN
         SET @sql = CONCAT(@sql, ', htkl.TENHINHTHUCKYLUAT AS TIEUCHI, YEAR(bkl.NAMBIKYLUAT) AS NAM 
                     FROM VIENCHUC vc
@@ -859,7 +870,6 @@ BEGIN
             SET @sql = CONCAT(@sql, ' AND (htkl.TENHINHTHUCKYLUAT LIKE ''%', p_Value, '%'' OR YEAR(bkl.NAMBIKYLUAT) = ''', p_Value, ''') ');
         END IF;
 
-    -- 5. GENDER FILTER (gioitinh)
     ELSEIF p_Category = 'gioitinh' THEN
         SET @sql = CONCAT(@sql, ', vc.GIOITINH AS TIEUCHI 
                     FROM VIENCHUC vc
@@ -871,13 +881,34 @@ BEGIN
             SET @sql = CONCAT(@sql, ' AND vc.GIOITINH = ''', p_Value, ''' ');
         END IF;
 
-    -- FALLBACK: If category doesn't match
+    ELSEIF p_Category = 'coquan' THEN
+        SET @sql = CONCAT(@sql, ', cq.TENCOQUAN AS TIEUCHI 
+          FROM VIENCHUC vc
+          LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+          LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+          LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+          WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND cq.TENCOQUAN LIKE ''%', p_Value, '%''');
+        END IF;
+
+    ELSEIF p_Category = 'trinhdo' THEN
+        SET @sql = CONCAT(@sql, ', td.TENTRINHDO AS TIEUCHI 
+          FROM VIENCHUC vc
+          JOIN TRINHDO td ON vc.MATRINHDO = td.MATRINHDO
+          LEFT JOIN CO_CHUCVU ccv ON vc.MAVIENCHUC = ccv.MAVIENCHUC
+          LEFT JOIN COQUAN cq ON ccv.MACOQUAN = cq.MACOQUAN
+          LEFT JOIN CHUCVU cv ON ccv.MACHUCVU = cv.MACHUCVU
+          WHERE 1=1 ');
+        IF p_Value IS NOT NULL AND p_Value <> '' THEN
+            SET @sql = CONCAT(@sql, ' AND td.TENTRINHDO LIKE ''%', p_Value, '%''');
+        END IF;
+
     ELSE
-        SELECT 'Invalid Category. Choose from: suckhoe, dotuoi, khenthuong, kyluat, gioitinh' AS ErrorMessage;
+        SELECT 'We are fucked' AS ErrorMessage;
         SET @sql = NULL;
     END IF;
 
-    -- Execute the dynamically built query safely
     IF @sql IS NOT NULL THEN
         PREPARE stmt FROM @sql;
         EXECUTE stmt;

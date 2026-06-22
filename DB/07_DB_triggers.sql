@@ -301,10 +301,14 @@ DELIMITER ;
 
 DELIMITER $$
 
+DELIMITER $$
+
 CREATE TRIGGER TRG_VIENCHUC_BI
 BEFORE INSERT ON VIENCHUC
 FOR EACH ROW
 BEGIN
+    DECLARE tuoi_cap_cccd INT;
+    DECLARE ngay_het_han DATE;
 
     IF NEW.NGAYSINH > NOW() THEN
         SIGNAL SQLSTATE '45000'
@@ -320,26 +324,141 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Vien chuc phai du 18 tuoi';
     END IF;
+
     IF TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, NEW.NGAYTUYENDUNG) >= 80 THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'Vien chuc phai nho hon 80 tuoi';
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Vien chuc phai nho hon 80 tuoi';
     END IF;
 
-END$$
-
-CREATE TRIGGER TRG_VIENCHUC_BU
-BEFORE UPDATE ON VIENCHUC
-FOR EACH ROW
-BEGIN
-
-    IF NEW.NGAYTUYENDUNG < NEW.NGAYSINH THEN
+    IF NEW.SOCCCD IS NOT NULL
+       AND NEW.SOCCCD NOT REGEXP '^[0-9]{12}$' THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Ngay tuyen dung phai sau ngay sinh';
+        SET MESSAGE_TEXT = 'So CCCD phai gom dung 12 chu so';
+    END IF;
+
+    -- Issue date cannot be in future
+    IF NEW.NGAYCAPCCCD > CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ngay cap CCCD khong hop le';
+    END IF;
+
+    IF NEW.NGAYCAPCCCD < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'CCCD da duoc cap qua 5 nam';
+    END IF;
+
+    SET tuoi_cap_cccd =
+        TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, NEW.NGAYCAPCCCD);
+
+    IF tuoi_cap_cccd < 25 THEN
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 25 YEAR);
+
+    ELSEIF tuoi_cap_cccd < 40 THEN
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 40 YEAR);
+
+    ELSEIF tuoi_cap_cccd < 60 THEN
+        SET ngay_het_han = DATE_ADD(NEW.NGAYSINH, INTERVAL 60 YEAR);
+
+    ELSE
+        SET ngay_het_han = NULL;
+    END IF;
+
+    IF ngay_het_han IS NOT NULL
+       AND CURDATE() > ngay_het_han THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'CCCD da het han theo quy dinh doi the';
     END IF;
 
 END$$
 
 DELIMITER ;
+
+DELIMITER ;
+-- ! TRIGGER FOR HỌC VỊ
+
+DELIMITER $$
+
+CREATE TRIGGER TRG_VIENCHUC_CHECK_HOCVI_BI
+BEFORE INSERT ON VIENCHUC
+FOR EACH ROW
+BEGIN
+    DECLARE v_hocvi VARCHAR(100);
+    DECLARE v_tuoi INT;
+    DECLARE v_tuoitoithieu INT DEFAULT 18;
+
+    -- * Lấy học vị từ bảng TRINHDOHOCVAN
+    SELECT TRINHDONGHIEPVUCHUYENNGANH
+    INTO v_hocvi
+    FROM TRINHDOHOCVAN
+    WHERE MATRINHDO = NEW.MATRINHDO;
+
+    SET v_tuoi = TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, CURDATE());
+
+    CASE
+        WHEN v_hocvi = 'Cao đẳng' THEN
+            SET v_tuoitoithieu = 20;
+
+        WHEN v_hocvi = 'Cử nhân' THEN
+            SET v_tuoitoithieu = 22;
+
+        WHEN v_hocvi = 'Thạc sĩ' THEN
+            SET v_tuoitoithieu = 24;
+
+        WHEN v_hocvi = 'Tiến sĩ' THEN
+            SET v_tuoitoithieu = 27;
+    END CASE;
+
+    IF v_tuoi < v_tuoitoithieu THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT =
+            'Khong du tuoi toi thieu cho hoc vi ';
+    END IF;
+
+END$$
+
+DELIMITER ;
+-- * HOC VI BU
+
+DELIMITER $$
+
+CREATE TRIGGER TRG_VIENCHUC_CHECK_HOCVI_BU
+BEFORE UPDATE ON VIENCHUC
+FOR EACH ROW
+BEGIN
+    DECLARE v_hocvi VARCHAR(100);
+    DECLARE v_tuoi INT;
+    DECLARE v_tuoitoithieu INT DEFAULT 18;
+
+    SELECT TRINHDONGHIEPVUCHUYENNGANH
+    INTO v_hocvi
+    FROM TRINHDOHOCVAN
+    WHERE MATRINHDO = NEW.MATRINHDO;
+
+    SET v_tuoi = TIMESTAMPDIFF(YEAR, NEW.NGAYSINH, CURDATE());
+
+    CASE
+        WHEN v_hocvi = 'Cao đẳng' THEN
+            SET v_tuoitoithieu = 20;
+
+        WHEN v_hocvi = 'Cử nhân' THEN
+            SET v_tuoitoithieu = 22;
+
+        WHEN v_hocvi = 'Thạc sĩ' THEN
+            SET v_tuoitoithieu = 24;
+
+        WHEN v_hocvi = 'Tiến sĩ' THEN
+            SET v_tuoitoithieu = 27;
+    END CASE;
+
+    IF v_tuoi < v_tuoitoithieu THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT ='Khong du tuoi toi thieu cho hoc vi ';
+    END IF;
+
+END$$
+
+DELIMITER ;s
+
 
 --   !  TRIGGER FOR LOG
 
