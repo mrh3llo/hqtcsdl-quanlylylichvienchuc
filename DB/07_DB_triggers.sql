@@ -193,12 +193,12 @@ BEGIN
         SET MESSAGE_TEXT = 'Chieu cao khong hop le';
     END IF;
 
-    IF NEW.CANNANG < 20 OR NEW.CANNANG > 300 THEN
+    IF NEW.CANNANG < 40 OR NEW.CANNANG > 150 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Can nang ngoai pham vi cho phep';
     END IF;
 
-    IF NEW.CHIEUCAO < 50 OR NEW.CHIEUCAO > 250 THEN
+    IF NEW.CHIEUCAO < 100 OR NEW.CHIEUCAO > 250 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Chieu cao ngoai pham vi cho phep';
     END IF;
