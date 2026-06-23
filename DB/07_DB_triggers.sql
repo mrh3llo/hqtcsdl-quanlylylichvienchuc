@@ -5,14 +5,14 @@ FOR EACH ROW
 BEGIN
     DECLARE v_count INT DEFAULT 0;
 
-    -- * End date > start date
+    -- * E > s
     IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
        AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'THOIGIANKETTHUCCHUCVU >= THOIGIANGIUCHUCVU';
     END IF;
 
-    -- * Only one active position allowed
+    -- * 1 per time
     IF NEW.THOIGIANKETTHUCCHUCVU IS NULL THEN
 
         SELECT COUNT(*)
@@ -28,7 +28,7 @@ BEGIN
 
     END IF;
 
-    -- * No overlapping periods
+    -- * fuck overlap
     SELECT COUNT(*)
     INTO v_count
     FROM CO_CHUCVU
@@ -56,7 +56,7 @@ FOR EACH ROW
 BEGIN
     DECLARE v_count INT DEFAULT 0;
 
-    -- * End date > start date
+    -- * shit yourself
     IF NEW.THOIGIANKETTHUCCHUCVU IS NOT NULL
        AND NEW.THOIGIANKETTHUCCHUCVU < NEW.THOIGIANGIUCHUCVU THEN
         SIGNAL SQLSTATE '45000'
@@ -85,7 +85,7 @@ BEGIN
 
     END IF;
 
-    -- * No overlapping periods
+    -- * e
     SELECT COUNT(*)
     INTO v_count
     FROM CO_CHUCVU
