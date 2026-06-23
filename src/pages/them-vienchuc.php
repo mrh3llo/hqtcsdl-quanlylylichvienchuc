@@ -17,14 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_them_vienchuc']))
     try {
         $imagePath = null;
         if (isset($_FILES['anh_dai_dien']) && $_FILES['anh_dai_dien']['error'] === UPLOAD_ERR_OK) {
+            
+            // Absolute path inside Docker container (maps to your host system's src folder)
             $uploadDir = '/var/www/html/uploads/pfp/';
+            
+            // Automatically creates the directories inside the container if they don't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
             $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9_\.]/', '', $_FILES['anh_dai_dien']['name']);
+            
             if (move_uploaded_file($_FILES['anh_dai_dien']['tmp_name'], $uploadDir . $fileName)) {
+                // The URL web path stored in the database for frontend <img> loading
                 $imagePath = '/uploads/pfp/' . $fileName;
             }
         }
 
-        // Keep empty text/date fields mapping correctly
+        // Sanitizer helper for handling optional date or text parameters securely
         $sanitize = function($key) {
             return (isset($_POST[$key]) && $_POST[$key] !== '') ? $_POST[$key] : null;
         };
