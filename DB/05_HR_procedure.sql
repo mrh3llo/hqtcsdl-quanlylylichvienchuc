@@ -744,13 +744,13 @@ DELIMITER ;
 DELIMITER //
 
 CREATE PROCEDURE SP_DASHBOARD_CHITIET_NHANSU(
-    IN p_TinhTrangSucKhoe VARCHAR(20),  -- Matches TINHTRANGSUCKHOE.TINHTRANGSUCKHOE
+    IN p_TinhTrangSucKhoe VARCHAR(20),  
     IN p_NhomTuoi VARCHAR(20),          -- 'Duoi 30', '30-39', '40-49', '50-59', '60+'
-    IN p_TenCoQuan VARCHAR(30),         -- Matches COQUAN.TENCOQUAN
-    IN p_TenChucVu CHAR(30),           -- Matches CHUCVU.TENCHUCVU
-    IN p_GioiTinh VARCHAR(3),           -- Matches VIENCHUC.GIOITINH ('Nam' / 'Nu')
-    IN p_NamKhenThuong INT,             -- Year of reward
-    IN p_NamKyLuat INT                  -- Year of discipline
+    IN p_TenCoQuan VARCHAR(30),
+    IN p_TenChucVu CHAR(30),           
+    IN p_GioiTinh VARCHAR(3),         
+    IN p_NamKhenThuong INT,             
+    IN p_NamKyLuat INT                 
 )
 BEGIN
     SELECT DISTINCT

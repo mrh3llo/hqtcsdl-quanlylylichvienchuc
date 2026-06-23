@@ -12,22 +12,43 @@ $discipline = [];
 $load_error = '';
 
 try {
+    // 1. Fetch from Views first while the connection buffer is clean
     $stmt_stats = $pdo->query("SELECT * FROM VW_DASHBOARD_TONGQUAN");
     $stats = $stmt_stats->fetch(PDO::FETCH_ASSOC) ?: [];
+    $stmt_stats->closeCursor();
 
     $stmt_health = $pdo->query("SELECT * FROM VW_THONGKE_TINHTRANGSUCKHOE");
     $health_data = $stmt_health->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $stmt_health->closeCursor();
 
-    $stmt_sp = $pdo->query("CALL SP_VIENCHUC_DASHBOARD()");
+    // 2. Prepare and Execute the multi-rowset Stored Procedure
+    $stmt_sp = $pdo->prepare("CALL SP_VIENCHUC_DASHBOARD()");
+    $stmt_sp->execute();
 
+    // Rowset 1: Basic Info
     $basic_info = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    $stmt_sp->nextRowset();
-    $work_history = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    $stmt_sp->nextRowset();
-    $rewards = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    $stmt_sp->nextRowset();
-    $discipline = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    
+    // Rowset 2: Work History
+    if ($stmt_sp->nextRowset()) {
+        $work_history = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    
+    // Rowset 3: Rewards
+    if ($stmt_sp->nextRowset()) {
+        $rewards = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    
+    // Rowset 4: Discipline
+    if ($stmt_sp->nextRowset()) {
+        $discipline = $stmt_sp->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    
+    // CRITICAL: Cycle through any remaining trailing status rowsets to clear MySQL buffer completely
+    while ($stmt_sp->nextRowset()) {
+        // Leave empty, just scanning out remnants to free the PDO channel
+    }
     $stmt_sp->closeCursor();
+
 } catch (PDOException $e) {
     $load_error = $e->getMessage();
 }
@@ -108,7 +129,7 @@ $avatar_path = $user_profile['ANHDAIDIEN'] ?? '';
 if (empty($avatar_path)) {
     $avatar_src = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 } else {
-    $avatar_src = '/uploads/avatars/' . htmlspecialchars($avatar_path, ENT_QUOTES, 'UTF-8');
+    $avatar_src = '/uploads/pfp/' . htmlspecialchars($avatar_path, ENT_QUOTES, 'UTF-8');
 }
 ?>
 
