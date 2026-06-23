@@ -1,5 +1,4 @@
 <?php
-// 1. Khởi động Session ngay đầu file (Tránh lỗi Headers Already Sent)
 if (session_status() === PHP_SESSION_NONE) { 
     session_start(); 
 }
@@ -223,7 +222,6 @@ $routes = [
     ],
 ];
 
-// Khởi tạo view mặc định an toàn
 if (empty($_GET['view']) && isset($routes[$section])) {
     $view = array_key_first($routes[$section]); 
 } else {
